@@ -135,9 +135,9 @@ SliderBar::SliderBar(wxWindow * parent, wxWindowID id,  float lb, float ub, floa
 		_popup_menu->Append ( new wxMenuItem(_popup_menu, ID_BindMenuOp, wxT("Learn MIDI Binding")));
 	}
 
-	_indcolor.Set(47, 149, 133);
+	_indcolor.Set(47, 149, 47);
 	_indbrush.SetColour(_indcolor);
-	_indmaxcolor.Set(200, 20, 20);
+	_indmaxcolor.Set(149, 20, 20);
 	_indmaxbrush.SetColour(_indmaxcolor);
 	
 	update_size();
@@ -720,50 +720,61 @@ void SliderBar::draw_area(wxDC & dc)
 
 void SliderBar::draw_ind(wxDC & dc)
 {
-	int pixw;
-
-	dc.SetPen(*wxTRANSPARENT_PEN);
+    int pixw;
+    
+    // Use transparent pen to avoid borders
+    dc.SetPen(*wxTRANSPARENT_PEN);
 	
-	if (_bar_style == FromLeftStyle)
-	{
-		pixw = (int) ((_ind_value - _lower_bound) / _val_scale);
-		if (pixw > 0) {
-			if (_ind_value >= _upper_bound) {
-				dc.SetBrush(_indmaxbrush);
-			}
-			else {
-				dc.SetBrush(_indbrush);
-			}
-			dc.DrawRectangle (1, 1, pixw-1, 1);
-			dc.DrawRectangle (1, _height - 2, pixw-1, 1);
-		}
-		
-	}
-	else if (_bar_style == FromRightStyle)
-	{
-		pixw = (int) ((_upper_bound - _ind_value) / _val_scale);
-		if (pixw < _width) {
-			if (_ind_value >= _upper_bound) {
-				dc.SetBrush(_indmaxbrush);
-			}
-			else {
-				dc.SetBrush(_indbrush);
-			}
-			dc.DrawRectangle (pixw, 1, _width - pixw -1, 2);
-			dc.DrawRectangle (pixw, _height - 2, _width - pixw - 1, 1);
-		}
-	}
-	
-	pixw = (int) ((_ind_value - _lower_bound) / _val_scale);
-	if (pixw > 0) {
-		if (_ind_value >= _upper_bound) {
-			dc.SetBrush(_indmaxbrush);
-		}
-		else {
-			dc.SetBrush(_indbrush);
-		}
-		dc.DrawRectangle (pixw - 2, 1, 2, _height-2);
-	}
+    
+    if (_bar_style == FromLeftStyle)
+    {
+        pixw = (int) ((_ind_value - _lower_bound) / _val_scale);
+        if (pixw > 0) {
+            // Select brush based on whether we're at max
+            if (_ind_value >= _upper_bound) {
+				wxColour color = _indmaxcolor;
+				wxColour transColor(color.Red(), color.Green(), color.Blue(), 160);
+				wxBrush transBrush(transColor);
+                dc.SetBrush(_indmaxbrush);
+            }
+            else {
+				wxColour color = _indcolor;
+				wxColour transColor(color.Red(), color.Green(), color.Blue(), 160);
+				wxBrush transBrush(transColor);
+                dc.SetBrush(transBrush);
+            }
+            // Draw solid filled rectangle from left edge to indicator position
+            dc.DrawRectangle(1, 1, pixw-1, _height-2);
+        }
+    }
+    else 
+	if (_bar_style == FromRightStyle) 
+    {
+        pixw = (int) ((_upper_bound - _ind_value) / _val_scale);
+        if (pixw < _width) {
+            if (_ind_value >= _upper_bound) {
+                dc.SetBrush(_indmaxbrush);
+            }
+            else {
+                dc.SetBrush(_indbrush);
+            }
+            // Draw solid filled rectangle from indicator position to right edge
+            dc.DrawRectangle(pixw, 1, _width - pixw - 1, _height-2);
+        }
+    }
+    
+    // Draw indicator line at exact position if needed
+    pixw = (int) ((_ind_value - _lower_bound) / _val_scale);
+    if (pixw > 0) {
+        if (_ind_value >= _upper_bound) {
+            dc.SetBrush(_indmaxbrush);
+        }
+        else {
+            dc.SetBrush(_indbrush);
+        }
+        // Optional: Draw thin indicator line
+        dc.DrawRectangle(pixw - 2, 1, 4, _height-2);
+    }
 }
 
 void SliderBar::show_text_ctrl ()

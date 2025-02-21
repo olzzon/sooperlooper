@@ -109,40 +109,23 @@ class LooperPanel
 	wxColour   _bgcolor;
 	wxColour   _selbgcolor;
 	wxColour   _learnbgcolor;
+	wxColour   _barGreen;
 	
 	PixButton * _undo_button;
 	PixButton * _redo_button;
 	PixButton * _record_button;
 	PixButton * _overdub_button;
 	PixButton * _multiply_button;
-	PixButton * _replace_button;
-	PixButton * _delay_button;
-	PixButton * _insert_button;
-	PixButton * _reverse_button;
-	PixButton * _substitute_button;
 	PixButton * _mute_button;
 	PixButton * _pause_button;
 	PixButton * _solo_button;
-	PixButton * _scratch_button;
-	PixButton * _load_button;
-	PixButton * _save_button;
-	PixButton * _once_button;
-	PixButton * _trig_button;
-	PixButton * _1x_button;
-	PixButton * _halfx_button;
-	PixButton * _2x_button;
-
 
 	SliderBar * _thresh_control;
-	SliderBar * _feedback_control;
 	SliderBar * _in_gain_control;
 	SliderBar * _dry_control;
 	SliderBar * _wet_control;
-	SliderBar * _scratch_control;
-	SliderBar * _rate_control;
-	SliderBar * _stretch_control;
-	SliderBar * _pitch_control;
-
+	SliderBar * _loop_position;
+	
 	CheckBox * _quantize_check;
 	CheckBox * _round_check;
 	CheckBox * _sync_check;
@@ -153,7 +136,7 @@ class LooperPanel
     wxTextCtrl * _name_text;
 
 	wxBoxSizer * _maininsizer;
-	CheckBox * _use_main_in_check;
+	//CheckBox * _use_main_in_check;
 
 	ChoiceBox  * _quantize_choice;
 
