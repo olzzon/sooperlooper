@@ -246,17 +246,20 @@ LooperPanel::init()
 	colsizer->Add (inthresh_sizer, 1, wxEXPAND|wxLEFT, 5);
 	
 	
-	// Output meter
 	_botpansizer = new wxBoxSizer(wxHORIZONTAL);
-	_wet_control = slider = new SliderBar(this, ID_WetControl, 0.0f, 1.0f, 1.0f);
-	slider->set_units(wxT("dB"));
-	slider->set_label(wxT("out"));
-	slider->set_show_indicator_bar (true);
-	slider->set_scale_mode(SliderBar::ZeroGainMode);
+	// Position
+	_loop_position = slider = new SliderBar(this, ID_ScratchControl, 0.0f, 1.0f, 0.0f);
+	slider->set_units(wxT(""));
+	slider->set_label(wxT("pos"));
 	slider->set_style (SliderBar::FromLeftStyle);
+	slider->set_decimal_digits (3);
+	slider->set_show_value(false);
+	slider->set_show_indicator_bar (true);
 	slider->SetFont(sliderFont);
 	slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
 	slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
+
+
 	_botpansizer->Add (slider, 1, wxEXPAND, 0);
 
 	colsizer->Add (_botpansizer, 1, wxEXPAND|wxTOP|wxLEFT, 4);
@@ -353,17 +356,17 @@ LooperPanel::init()
 	// scratch stuff
 	rowsizer = new wxBoxSizer(wxHORIZONTAL);
 
-	// Position
-	_loop_position = slider = new SliderBar(this, ID_ScratchControl, 0.0f, 1.0f, 0.0f);
-	slider->set_units(wxT(""));
-	slider->set_label(wxT("pos"));
-	slider->set_style (SliderBar::FromLeftStyle);
-	slider->set_decimal_digits (3);
-	slider->set_show_value(false);
-	slider->set_show_indicator_bar (true);
-	slider->SetFont(sliderFont);
-	slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
-	slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
+		// Output meter
+		_wet_control = slider = new SliderBar(this, ID_WetControl, 0.0f, 1.0f, 1.0f);
+		slider->set_units(wxT("dB"));
+		slider->set_label(wxT("out"));
+		slider->set_show_indicator_bar (true);
+		slider->set_scale_mode(SliderBar::ZeroGainMode);
+		slider->set_style (SliderBar::FromLeftStyle);
+		slider->SetFont(sliderFont);
+		slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
+		slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
+
 	rowsizer->Add (slider, 1, wxEXPAND|wxTOP|wxLEFT, 3);
 
 	// pause
