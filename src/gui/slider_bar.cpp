@@ -772,8 +772,7 @@ void SliderBar::draw_ind(wxDC & dc)
         else {
             dc.SetBrush(_indbrush);
         }
-        // Optional: Draw thin indicator line
-        dc.DrawRectangle(pixw - 2, 1, 4, _height-2);
+        dc.DrawRectangle(pixw - 1, 1, 2, _height-2);
     }
 }
 
