@@ -204,7 +204,7 @@ LooperPanel::init()
 
 	_in_gain_control = slider = new SliderBar(this, ID_InputGainControl, 0.0f, 1.0f, 0.0f, true, wxDefaultPosition, wxSize(100, 40));
 	slider->set_units(wxT(""));
-	slider->set_label(wxT("in gain"));
+	slider->set_label(wxT("In Gain"));
 	slider->set_show_indicator_bar (false);
 	slider->set_scale_mode(SliderBar::ZeroGainMode);
 	slider->set_style (SliderBar::FromLeftStyle);
@@ -215,7 +215,7 @@ LooperPanel::init()
 	
 	_thresh_control = slider = new SliderBar(this, ID_ThreshControl, 0.0f, 1.0f, 0.0f, true, wxDefaultPosition, wxSize(100, 40));
 	slider->set_units(wxT(""));
-	slider->set_label(wxT("thresh"));
+	slider->set_label(wxT("Thresh"));
 	slider->set_show_indicator_bar (true);
 	slider->set_scale_mode(SliderBar::ZeroGainMode);
 	slider->set_style (SliderBar::FromLeftStyle);
@@ -242,11 +242,11 @@ LooperPanel::init()
 	// Position
 	_loop_position = slider = new SliderBar(this, ID_ScratchControl, 0.0f, 1.0f, 0.0f, true, wxDefaultPosition, wxSize(210, 80));
 	slider->set_units(wxT(""));
-	slider->set_label(wxT("pos"));
+	slider->set_label(wxT("Position"));
 	slider->set_style (SliderBar::FromLeftStyle);
 	slider->set_decimal_digits (3);
 	slider->set_show_value(false);
-	slider->set_indicator_bar_color(wxColour(240, 240, 50));
+	slider->set_indicator_bar_color(wxColour(255, 255, 0));
 	slider->set_show_indicator_bar (true);
 	slider->SetFont(sliderFont);
 	slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
@@ -327,7 +327,7 @@ LooperPanel::init()
 	// Output meter
 	_wet_control = slider = new SliderBar(this, ID_WetControl, 0.0f, 1.0f, 1.0f, true, wxDefaultPosition, wxSize(200, 40));
 	slider->set_units(wxT("dB"));
-	slider->set_label(wxT("out"));
+	slider->set_label(wxT("Output Level"));
 	slider->set_show_indicator_bar (true);
 	slider->set_scale_mode(SliderBar::ZeroGainMode);
 	slider->set_style (SliderBar::FromLeftStyle);
@@ -389,7 +389,7 @@ LooperPanel::post_init()
 		// dry is only meaningful with discrete io
 		_dry_control = slider = new SliderBar(this, ID_DryControl, 0.0f, 1.0f, 1.0f, true, wxDefaultPosition, wxSize(100, 40));
 		slider->set_units(wxT("dB"));
-		slider->set_label(wxT("in mon"));
+		slider->set_label(wxT("In Mon"));
 		slider->set_scale_mode(SliderBar::ZeroGainMode);
 		slider->set_style (SliderBar::FromLeftStyle);
 		slider->SetFont(sliderFont);
@@ -414,10 +414,10 @@ LooperPanel::post_init()
 		_panners[i] = slider =  new SliderBar(this, ID_Panner, 0.0f, 1.0f, defval, true, wxDefaultPosition, wxSize(barwidth,40));
 		slider->set_units(wxT(""));
 		if (_chan_count > 1) {
-			slider->set_label(wxString::Format(wxT("pan %d"), i+1));
+			slider->set_label(wxString::Format(wxT("Pan %d"), i+1));
 		}
 		else {
-			slider->set_label(wxString::Format(wxT("pan")));
+			slider->set_label(wxString::Format(wxT("Pan")));
 		}
 		slider->set_style (SliderBar::CenterStyle);
 		slider->set_decimal_digits (3);
