@@ -131,7 +131,15 @@ LooperPanel::init()
 	wxBoxSizer * mainVSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxBoxSizer * colsizer = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer * rowsizer;
+
+	// These are used when more than one column is needed within one of the 4 columns 
+	wxBoxSizer * subColSizer = new wxBoxSizer(wxVERTICAL);	
+	wxBoxSizer * subRowSizer = new wxBoxSizer(wxHORIZONTAL);
+
+	SliderBar *slider;
+	wxFont sliderFont = *wxSMALL_FONT;
+	wxSize sliderMinSize(100, 30);
+
 
 	// add selbar
 	_bgcolor.Set(0,0,0);
@@ -169,59 +177,29 @@ LooperPanel::init()
 	int edgegap = 0;
 
 	// ****** 1.Row
- 	colsizer->Add (_undo_button, 0, 0, 0);
-
- 	colsizer->Add (_redo_button, 0, wxTOP, 5);
-	
-	mainSizer->Add (colsizer, 0, wxEXPAND|wxLEFT, 5);
-
-	
-	// ****** 2.Row
 	colsizer = new wxBoxSizer(wxVERTICAL);
-
+	subRowSizer = new wxBoxSizer(wxHORIZONTAL);
 	
- 	colsizer->Add (_record_button, 0, wxLEFT, 5);
+	// ****** 1.SubRow
+	subColSizer = new wxBoxSizer(wxVERTICAL);
+ 	subColSizer->Add (_undo_button, 0, 0, 5);
+ 	subColSizer->Add (_redo_button, 0, wxTOP, 5);
+	subRowSizer->Add (subColSizer, 0, wxTop, 0);
 
- 	colsizer->Add (_overdub_button, 0, wxTOP|wxLEFT, 5);
+	// ****** 2.SubRow
+	subColSizer = new wxBoxSizer(wxVERTICAL);	
 
- 	colsizer->Add (_multiply_button, 0, wxTOP|wxLEFT, 5);
-	
-	mainSizer->Add (colsizer, 0, wxEXPAND|wxBOTTOM, 0);
+	subColSizer->Add (_record_button, 1, wxLEFT, 5);
+	subColSizer->Add (_overdub_button, 1, wxTOP|wxLEFT, 5);
+	subColSizer->Add (_multiply_button, 1, wxTOP|wxLEFT, 5);
 
+	subRowSizer->Add (subColSizer, 0, wxTop, 0);
+	colsizer->Add (subRowSizer, 0, wxTop| wxBOTTOM, 5);
 
-	// ***** 3.Row
-	colsizer = new wxBoxSizer(wxVERTICAL);
-	_maininsizer = new wxBoxSizer(wxHORIZONTAL);
-
-	SliderBar *slider;
-	wxFont sliderFont = *wxSMALL_FONT;
-		
-	colsizer->Add (_maininsizer, 1, wxEXPAND|wxLEFT, 5);
-
-
-	rowsizer = new wxBoxSizer(wxHORIZONTAL);
-
-	colsizer->Add (rowsizer, 0);
-
-	rowsizer = new wxBoxSizer(wxHORIZONTAL);
-
-	colsizer->Add (rowsizer, 0);
-	
-	mainSizer->Add (colsizer, 0, wxEXPAND, 5);
-	
-
-	// **************** 4.Row   time area
-	colsizer = new wxBoxSizer(wxVERTICAL);
-
-	_time_panel = new TimePanel(_loop_control, this, -1);
-	_time_panel->set_index (_index);
-	
-	colsizer->Add (_time_panel, 0, wxLEFT, 5);
-
-	// Input gain + meter
+	// ******** 1.full row - Input gain + meter
 	wxBoxSizer * inthresh_sizer = new wxBoxSizer(wxHORIZONTAL);
 
-	_in_gain_control = slider = new SliderBar(this, ID_InputGainControl, 0.0f, 1.0f, 0.0f);
+	_in_gain_control = slider = new SliderBar(this, ID_InputGainControl, 0.0f, 1.0f, 0.0f, true, wxDefaultPosition, sliderMinSize);
 	slider->set_units(wxT(""));
 	slider->set_label(wxT("in gain"));
 	slider->set_show_indicator_bar (false);
@@ -243,7 +221,19 @@ LooperPanel::init()
 	slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
 	inthresh_sizer->Add (slider, 1, wxLEFT|wxEXPAND, 3);
 	
-	colsizer->Add (inthresh_sizer, 1, wxEXPAND|wxLEFT, 5);
+	colsizer->Add (inthresh_sizer, 1, wxEXPAND|wxLEFT|wxTop, 5);
+	
+	// Add to main sizer:
+	mainSizer->Add (colsizer, 0, wxEXPAND|wxBOTTOM, 0);
+
+
+	// **************** 3.Row   time area
+	colsizer = new wxBoxSizer(wxVERTICAL);
+
+	_time_panel = new TimePanel(_loop_control, this, -1);
+	_time_panel->set_index (_index);
+	
+	colsizer->Add (_time_panel, 0, wxLEFT, 5);
 	
 	
 	_botpansizer = new wxBoxSizer(wxHORIZONTAL);
@@ -268,132 +258,106 @@ LooperPanel::init()
 	mainSizer->Add (colsizer, 0, wxEXPAND, 5);
 
 
-	// ***** 5.Row
+	// ***** 4.Row
 
 	colsizer = new wxBoxSizer(wxVERTICAL);
-	rowsizer = new wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer * lilcolsizer = new wxBoxSizer(wxVERTICAL);
+	subRowSizer = new wxBoxSizer(wxHORIZONTAL);
+
+	// ******* 1.Sub Row:
+	subColSizer = new wxBoxSizer(wxVERTICAL);	
 	
-	wxBoxSizer * lilrowsizer = new wxBoxSizer(wxHORIZONTAL);
-	
-	_sync_check = new CheckBox(this, ID_SyncCheck, wxT("sync"), true, wxDefaultPosition, wxSize(55, 18));
+	_sync_check = new CheckBox(this, ID_SyncCheck, wxT("sync"), true, wxDefaultPosition, wxSize(100, 24));
 	_sync_check->SetFont(sliderFont);
 	_sync_check->SetToolTip(wxT("sync operations to quantize source"));
 	_sync_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("sync")));
 	_sync_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _sync_check->GetId()));
-	lilrowsizer->Add (_sync_check, 1, wxLEFT, 3);
+	subColSizer->Add (_sync_check, 1, wxLEFT, 3);
 
-	_name_text = new wxTextCtrl(this, ID_NameText, wxT(""), wxDefaultPosition, wxSize(40, 18), wxTE_PROCESS_ENTER|wxTE_LEFT, wxDefaultValidator, wxT("KeyAware"));
-	_name_text->SetWindowVariant(wxWINDOW_VARIANT_SMALL);
-	_name_text->SetToolTip(wxT("loop name"));
-	_name_text->SetFont(sliderFont);
-	lilrowsizer->Add (_name_text, 1, wxLEFT|wxALIGN_CENTRE_VERTICAL, 3);
-
-	lilcolsizer->Add (lilrowsizer, 0, wxTOP|wxEXPAND, 0);
-
-	lilrowsizer = new wxBoxSizer(wxHORIZONTAL);
-	_play_sync_check = new CheckBox(this, ID_PlaySyncCheck, wxT("play sync"), true, wxDefaultPosition, wxSize(55, 18));
+	subRowSizer = new wxBoxSizer(wxHORIZONTAL);
+	_play_sync_check = new CheckBox(this, ID_PlaySyncCheck, wxT("play sync"), true, wxDefaultPosition, wxSize(100, 24));
 	_play_sync_check->SetFont(sliderFont);
 	_play_sync_check->SetToolTip(wxT("sync playback auto-triggering to quantized sync source"));
 	_play_sync_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("playback_sync")));
 	_play_sync_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _play_sync_check->GetId()));
-	lilrowsizer->Add (_play_sync_check, 1, wxLEFT, 3);
+	subColSizer->Add (_play_sync_check, 1, wxLEFT, 3);
     
-	_prefader_check = new CheckBox(this, ID_PrefaderCheck, wxT("prefader"), true, wxDefaultPosition, wxSize(55, 18));
+	_prefader_check = new CheckBox(this, ID_PrefaderCheck, wxT("prefader"), true, wxDefaultPosition, wxSize(100, 18));
 	_prefader_check->SetFont(sliderFont);
 	_prefader_check->SetToolTip(wxT("discrete outputs are pre-fader"));
 	_prefader_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("discrete_prefader")));
 	_prefader_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _prefader_check->GetId()));
-	lilrowsizer->Add (_prefader_check, 1, wxLEFT, 3);
-    
-	lilcolsizer->Add (lilrowsizer, 0, wxTOP|wxEXPAND, 0);
-	
-	lilrowsizer = new wxBoxSizer(wxHORIZONTAL);
-	_play_feed_check = new CheckBox(this, ID_UseFeedbackPlayCheck, wxT("p. feedb"), true, wxDefaultPosition, wxSize(55, 18));
+	subColSizer->Add (_prefader_check, 1, wxLEFT, 3);
+
+  	_play_feed_check = new CheckBox(this, ID_UseFeedbackPlayCheck, wxT("p. feedb"), true, wxDefaultPosition, wxSize(100, 18));
 	_play_feed_check->SetFont(sliderFont);
 	_play_feed_check->SetToolTip(wxT("enable feedback during playback"));
 	_play_feed_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("use_feedback_play")));
 	_play_feed_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _play_feed_check->GetId()));
-	lilrowsizer->Add (_play_feed_check, 1, wxLEFT, 3);
+	subColSizer->Add (_play_feed_check, 1, wxLEFT, 3);
 
-	_tempo_stretch_check = new CheckBox(this, ID_TempoStretchCheck, wxT("t. stretch"), true, wxDefaultPosition, wxSize(55, 18));
+	_tempo_stretch_check = new CheckBox(this, ID_TempoStretchCheck, wxT("t. stretch"), true, wxDefaultPosition, wxSize(100, 18));
 	_tempo_stretch_check->SetFont(sliderFont);
 	_tempo_stretch_check->SetToolTip(wxT("enable automatic timestretch when tempo changes"));
 	_tempo_stretch_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("tempo_stretch")));
 	_tempo_stretch_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _tempo_stretch_check->GetId()));
-	lilrowsizer->Add (_tempo_stretch_check, 1, wxLEFT, 3);
+	subColSizer->Add (_tempo_stretch_check, 1, wxLEFT, 3);
 
-	lilcolsizer->Add (lilrowsizer, 0, wxTOP|wxEXPAND, 0);
+	subRowSizer->Add (subColSizer, 0, wxLEFT, 3);
+
+	// ********** 2.SubRow	
+	subColSizer = new wxBoxSizer(wxVERTICAL);	
+  	
+	_name_text = new wxTextCtrl(this, ID_NameText, wxT(""), wxDefaultPosition, wxSize(140, 24), wxTE_PROCESS_ENTER|wxTE_LEFT, wxDefaultValidator, wxT("KeyAware"));
+	_name_text->SetWindowVariant(wxWINDOW_VARIANT_SMALL);
+	_name_text->SetToolTip(wxT("loop name"));
+	_name_text->SetFont(sliderFont);
+	subColSizer->Add (_name_text, 1, wxLEFT | wxTop, 3);
+
+	subRowSizer->Add (subColSizer, 1, wxTop, 5);
+
+	colsizer->Add (subRowSizer, 1, wxTop, 5);
 	
-	rowsizer->Add(lilcolsizer, 1, wxLEFT, 3);
-
-
-	lilcolsizer = new wxBoxSizer(wxVERTICAL);
-		
-	rowsizer->Add(lilcolsizer, 0, wxLEFT, 3);
-
-	lilcolsizer = new wxBoxSizer(wxVERTICAL);
-		
-	rowsizer->Add(lilcolsizer, 0, wxLEFT, 3);
-	
-	lilcolsizer = new wxBoxSizer(wxVERTICAL);
-	
- 	lilcolsizer->Add (_mute_button, 0, wxTOP, 0);
-
- 	lilcolsizer->Add (_solo_button, 0, wxTOP, 2);
-
-	rowsizer->Add(lilcolsizer, 0, wxLEFT, 3);	
-
-	colsizer->Add (rowsizer, 0, wxEXPAND);
-
-	colsizer->Add (20,-1, 1);
-
-	// panners:
+	// In Mon & Panners:
 	_toppansizer = new wxBoxSizer(wxHORIZONTAL);
 	colsizer->Add (_toppansizer, 1, wxEXPAND|wxTOP|wxLEFT, 4);
 	// panners are added later
 
-	// scratch stuff
-	rowsizer = new wxBoxSizer(wxHORIZONTAL);
+	// Output meter
+	_wet_control = slider = new SliderBar(this, ID_WetControl, 0.0f, 1.0f, 1.0f, true, wxDefaultPosition, sliderMinSize);
+	slider->set_units(wxT("dB"));
+	slider->set_label(wxT("out"));
+	slider->set_show_indicator_bar (true);
+	slider->set_scale_mode(SliderBar::ZeroGainMode);
+	slider->set_style (SliderBar::FromLeftStyle);
+	slider->SetFont(sliderFont);
+	slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
+	slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
 
-		// Output meter
-		_wet_control = slider = new SliderBar(this, ID_WetControl, 0.0f, 1.0f, 1.0f);
-		slider->set_units(wxT("dB"));
-		slider->set_label(wxT("out"));
-		slider->set_show_indicator_bar (true);
-		slider->set_scale_mode(SliderBar::ZeroGainMode);
-		slider->set_style (SliderBar::FromLeftStyle);
-		slider->SetFont(sliderFont);
-		slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
-		slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
+	colsizer->Add (slider, 1, wxEXPAND|wxTOP|wxLEFT, 3);
 
-	rowsizer->Add (slider, 1, wxEXPAND|wxTOP|wxLEFT, 3);
-
-	// pause
- 	rowsizer->Add (_pause_button, 0, wxTOP|wxLEFT, 3);
-
-	
-	colsizer->Add (rowsizer, 0, wxEXPAND);
-
-	// rate stuff
-	rowsizer = new wxBoxSizer(wxHORIZONTAL);
-	
-	colsizer->Add (rowsizer, 0, wxEXPAND|wxLEFT, 1);
-
-	
-	mainSizer->Add (colsizer, 1, wxEXPAND|wxRIGHT, 0);
-
-        mainSizer->Add (_rightSelbar, 0, wxEXPAND|wxLEFT, 0);
+	// Add 4th row to mainsize:
+	mainSizer->Add (colsizer, 1, wxEXPAND|wxLEFT, 0);
 
 
-        mainVSizer->Add (mainSizer, 1, wxEXPAND, 0);
-        mainVSizer->Add (_bottomSelbar, 0, wxEXPAND|wxLEFT, 0);
+	//****** 5.Row
+
+	// Mute, Solo & Pause
+	colsizer = new wxBoxSizer(wxVERTICAL);
+
+	colsizer->Add (_mute_button, 0, wxTOP | wxRIGHT, 0);
+	colsizer->Add (_solo_button, 0, wxTOP | wxRIGHT, 2);
+	colsizer->Add (_pause_button, 0, wxTOP | wxRIGHT, 2);
+
+	mainSizer->Add (colsizer, 0, wxRIGHT, 0);
 
 
+	// Add final things:
+	mainSizer->Add (_rightSelbar, 0, wxEXPAND|wxLEFT, 0);
+	mainVSizer->Add (mainSizer, 1, wxEXPAND, 0);
+	mainVSizer->Add (_bottomSelbar, 0, wxEXPAND|wxLEFT, 0);
 	
 	bind_events();
-	
-	
+		
 	this->SetAutoLayout( true );     // tell dialog to use sizer
 	this->SetSizer( mainVSizer );      // actually set the sizer
 	mainVSizer->Fit( this );            // set size to minimum size as calculated by the sizer
@@ -735,7 +699,7 @@ LooperPanel::update_controls()
 		update_state();
 	}
 
-	if (pos_updated /*&& _last_state != LooperStateScratching */) {
+	if (pos_updated) {
 		float looplen;
 		_loop_control->get_value(_index, wxT("loop_len"), looplen);
 		_loop_control->get_value(_index, wxT("loop_pos"), val);
@@ -763,9 +727,6 @@ LooperPanel::update_state()
 		_flashing_button->set_active(false);
 		_flashing_button = 0;
 	}
-		
-	
-	//_rate_button->Enable(false);
 	
 	// set not active for all state buttons
 	switch(_last_state) {
@@ -868,11 +829,6 @@ LooperPanel::update_state()
 	}
 	
 	_last_state = state;
-}
-
-void
-LooperPanel::update_rate_buttons(float val)
-{
 }
 
 void
@@ -997,7 +953,6 @@ void
 LooperPanel::rate_button_event (int button, float rate)
 {
 	post_control_event (wxString(wxT("rate")), rate);
-	update_rate_buttons (rate);
 }
 
 void

@@ -89,7 +89,6 @@ class LooperPanel
 	void delay_button_release_event (int button);
 	void rate_button_event(int button, float rate);
 	void rate_bind_events (float rate);
-	void update_rate_buttons (float rate);
 	
 	void on_quantize_change (int index, wxString strval);
 
