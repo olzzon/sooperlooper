@@ -138,7 +138,7 @@ LooperPanel::init()
 
 	SliderBar *slider;
 	wxFont sliderFont = *wxSMALL_FONT;
-	wxSize sliderMinSize(100, 30);
+	wxSize sliderMinSize(200, 40);
 
 
 	// add selbar
@@ -196,10 +196,11 @@ LooperPanel::init()
 	subRowSizer->Add (subColSizer, 0, wxTop, 0);
 	colsizer->Add (subRowSizer, 0, wxTop| wxBOTTOM, 5);
 
+	
 	// ******** 1.full row - Input gain + meter
 	wxBoxSizer * inthresh_sizer = new wxBoxSizer(wxHORIZONTAL);
 
-	_in_gain_control = slider = new SliderBar(this, ID_InputGainControl, 0.0f, 1.0f, 0.0f, true, wxDefaultPosition, sliderMinSize);
+	_in_gain_control = slider = new SliderBar(this, ID_InputGainControl, 0.0f, 1.0f, 0.0f, true, wxDefaultPosition, wxSize(100, 40));
 	slider->set_units(wxT(""));
 	slider->set_label(wxT("in gain"));
 	slider->set_show_indicator_bar (false);
@@ -208,9 +209,9 @@ LooperPanel::init()
 	slider->SetFont(sliderFont);
 	slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
 	slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
-	inthresh_sizer->Add (slider, 1, wxALL|wxEXPAND, 0);
+	inthresh_sizer->Add (slider, 0, wxLEFT|wxBOTTOM, 0);
 	
-	_thresh_control = slider = new SliderBar(this, ID_ThreshControl, 0.0f, 1.0f, 0.0f);
+	_thresh_control = slider = new SliderBar(this, ID_ThreshControl, 0.0f, 1.0f, 0.0f, true, wxDefaultPosition, wxSize(100, 40));
 	slider->set_units(wxT(""));
 	slider->set_label(wxT("thresh"));
 	slider->set_show_indicator_bar (true);
@@ -219,12 +220,12 @@ LooperPanel::init()
 	slider->SetFont(sliderFont);
 	slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
 	slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
-	inthresh_sizer->Add (slider, 1, wxLEFT|wxEXPAND, 3);
+	inthresh_sizer->Add (slider, 0, wxLEFT|wxBOTTOM, 3);
 	
-	colsizer->Add (inthresh_sizer, 1, wxEXPAND|wxLEFT|wxTop, 5);
+	colsizer->Add (inthresh_sizer, 1, wxLEFT|wxBOTTOM, 0);
 	
 	// Add to main sizer:
-	mainSizer->Add (colsizer, 0, wxEXPAND|wxBOTTOM, 0);
+	mainSizer->Add (colsizer, 0, wxEXPAND|wxBOTTOM, 5);
 
 
 	// **************** 3.Row   time area
@@ -235,27 +236,26 @@ LooperPanel::init()
 	
 	colsizer->Add (_time_panel, 0, wxLEFT, 5);
 	
-	
 	_botpansizer = new wxBoxSizer(wxHORIZONTAL);
 	// Position
-	_loop_position = slider = new SliderBar(this, ID_ScratchControl, 0.0f, 1.0f, 0.0f);
+	_loop_position = slider = new SliderBar(this, ID_ScratchControl, 0.0f, 1.0f, 0.0f, true, wxDefaultPosition, wxSize(210, 80));
 	slider->set_units(wxT(""));
 	slider->set_label(wxT("pos"));
 	slider->set_style (SliderBar::FromLeftStyle);
 	slider->set_decimal_digits (3);
 	slider->set_show_value(false);
+	slider->set_indicator_bar_color(wxColour(240, 240, 50));
 	slider->set_show_indicator_bar (true);
 	slider->SetFont(sliderFont);
 	slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
 	slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
 
+	_botpansizer->Add (slider, 1, wxTOP, 20);
 
-	_botpansizer->Add (slider, 1, wxEXPAND, 0);
-
-	colsizer->Add (_botpansizer, 1, wxEXPAND|wxTOP|wxLEFT, 4);
+	colsizer->Add (_botpansizer, 1, wxBOTTOM | wxLEFT, 4);
 	
 	
-	mainSizer->Add (colsizer, 0, wxEXPAND, 5);
+	mainSizer->Add (colsizer, 0, wxEXPAND|wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
 
 	// ***** 4.Row
@@ -271,7 +271,7 @@ LooperPanel::init()
 	_sync_check->SetToolTip(wxT("sync operations to quantize source"));
 	_sync_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("sync")));
 	_sync_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _sync_check->GetId()));
-	subColSizer->Add (_sync_check, 1, wxLEFT, 3);
+	subColSizer->Add (_sync_check, 1, wxLEFT, 0);
 
 	subRowSizer = new wxBoxSizer(wxHORIZONTAL);
 	_play_sync_check = new CheckBox(this, ID_PlaySyncCheck, wxT("play sync"), true, wxDefaultPosition, wxSize(100, 24));
@@ -279,51 +279,51 @@ LooperPanel::init()
 	_play_sync_check->SetToolTip(wxT("sync playback auto-triggering to quantized sync source"));
 	_play_sync_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("playback_sync")));
 	_play_sync_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _play_sync_check->GetId()));
-	subColSizer->Add (_play_sync_check, 1, wxLEFT, 3);
+	subColSizer->Add (_play_sync_check, 1, wxLEFT, 0);
     
 	_prefader_check = new CheckBox(this, ID_PrefaderCheck, wxT("prefader"), true, wxDefaultPosition, wxSize(100, 18));
 	_prefader_check->SetFont(sliderFont);
 	_prefader_check->SetToolTip(wxT("discrete outputs are pre-fader"));
 	_prefader_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("discrete_prefader")));
 	_prefader_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _prefader_check->GetId()));
-	subColSizer->Add (_prefader_check, 1, wxLEFT, 3);
+	subColSizer->Add (_prefader_check, 1, wxLEFT, 0);
 
   	_play_feed_check = new CheckBox(this, ID_UseFeedbackPlayCheck, wxT("p. feedb"), true, wxDefaultPosition, wxSize(100, 18));
 	_play_feed_check->SetFont(sliderFont);
 	_play_feed_check->SetToolTip(wxT("enable feedback during playback"));
 	_play_feed_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("use_feedback_play")));
 	_play_feed_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _play_feed_check->GetId()));
-	subColSizer->Add (_play_feed_check, 1, wxLEFT, 3);
+	subColSizer->Add (_play_feed_check, 1, wxLEFT, 0);
 
 	_tempo_stretch_check = new CheckBox(this, ID_TempoStretchCheck, wxT("t. stretch"), true, wxDefaultPosition, wxSize(100, 18));
 	_tempo_stretch_check->SetFont(sliderFont);
 	_tempo_stretch_check->SetToolTip(wxT("enable automatic timestretch when tempo changes"));
 	_tempo_stretch_check->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::check_events), wxT("tempo_stretch")));
 	_tempo_stretch_check->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) _tempo_stretch_check->GetId()));
-	subColSizer->Add (_tempo_stretch_check, 1, wxLEFT, 3);
+	subColSizer->Add (_tempo_stretch_check, 1, wxLEFT, 0);
 
-	subRowSizer->Add (subColSizer, 0, wxLEFT, 3);
+	subRowSizer->Add (subColSizer, 0, wxLEFT, 0);
 
 	// ********** 2.SubRow	
 	subColSizer = new wxBoxSizer(wxVERTICAL);	
   	
-	_name_text = new wxTextCtrl(this, ID_NameText, wxT(""), wxDefaultPosition, wxSize(140, 24), wxTE_PROCESS_ENTER|wxTE_LEFT, wxDefaultValidator, wxT("KeyAware"));
+	_name_text = new wxTextCtrl(this, ID_NameText, wxT(""), wxDefaultPosition, wxSize(200, 24), wxTE_PROCESS_ENTER|wxTE_LEFT, wxDefaultValidator, wxT("KeyAware"));
 	_name_text->SetWindowVariant(wxWINDOW_VARIANT_SMALL);
 	_name_text->SetToolTip(wxT("loop name"));
 	_name_text->SetFont(sliderFont);
-	subColSizer->Add (_name_text, 1, wxLEFT | wxTop, 3);
+	subColSizer->Add (_name_text, 1, wxLEFT | wxTop, 0);
 
-	subRowSizer->Add (subColSizer, 1, wxTop, 5);
-
-	colsizer->Add (subRowSizer, 1, wxTop, 5);
-	
 	// In Mon & Panners:
 	_toppansizer = new wxBoxSizer(wxHORIZONTAL);
-	colsizer->Add (_toppansizer, 1, wxEXPAND|wxTOP|wxLEFT, 4);
+	subColSizer->Add (_toppansizer, 1, wxTOP|wxLEFT, 3);
 	// panners are added later
+	
+	subRowSizer->Add (subColSizer, 1, wxTop, 5);
+	colsizer->Add (subRowSizer, 1, wxLEFT | wxTop, 5);
 
+	// ***** Full width 3rd Row
 	// Output meter
-	_wet_control = slider = new SliderBar(this, ID_WetControl, 0.0f, 1.0f, 1.0f, true, wxDefaultPosition, sliderMinSize);
+	_wet_control = slider = new SliderBar(this, ID_WetControl, 0.0f, 1.0f, 1.0f, true, wxDefaultPosition, wxSize(200, 40));
 	slider->set_units(wxT("dB"));
 	slider->set_label(wxT("out"));
 	slider->set_show_indicator_bar (true);
@@ -333,10 +333,10 @@ LooperPanel::init()
 	slider->value_changed.connect (sigc::bind(mem_fun (*this, &LooperPanel::slider_events), (int) slider->GetId()));
 	slider->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::control_bind_events), (int) slider->GetId()));
 
-	colsizer->Add (slider, 1, wxEXPAND|wxTOP|wxLEFT, 3);
+	colsizer->Add (slider, 0, wxEXPAND | wxLEFT | wxRIGHT, 5);
 
 	// Add 4th row to mainsize:
-	mainSizer->Add (colsizer, 1, wxEXPAND|wxLEFT, 0);
+	mainSizer->Add (colsizer, 1, wxLEFT, 5);
 
 
 	//****** 5.Row
@@ -348,7 +348,7 @@ LooperPanel::init()
 	colsizer->Add (_solo_button, 0, wxTOP | wxRIGHT, 2);
 	colsizer->Add (_pause_button, 0, wxTOP | wxRIGHT, 2);
 
-	mainSizer->Add (colsizer, 0, wxRIGHT, 0);
+	mainSizer->Add (colsizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 5);
 
 
 	// Add final things:
@@ -382,7 +382,7 @@ LooperPanel::post_init()
 		_has_discrete_io = true;
 
 		// dry is only meaningful with discrete io
-		_dry_control = slider = new SliderBar(this, ID_DryControl, 0.0f, 1.0f, 1.0f);
+		_dry_control = slider = new SliderBar(this, ID_DryControl, 0.0f, 1.0f, 1.0f, true, wxDefaultPosition, wxSize(100, 40));
 		slider->set_units(wxT("dB"));
 		slider->set_label(wxT("in mon"));
 		slider->set_scale_mode(SliderBar::ZeroGainMode);
@@ -406,7 +406,7 @@ LooperPanel::post_init()
 			defval = (i == 0) ? 0.0f : 1.0f;
 		}
 		
-		_panners[i] = slider =  new SliderBar(this, ID_Panner, 0.0f, 1.0f, defval, true, wxDefaultPosition, wxSize(barwidth,-1));
+		_panners[i] = slider =  new SliderBar(this, ID_Panner, 0.0f, 1.0f, defval, true, wxDefaultPosition, wxSize(barwidth,40));
 		slider->set_units(wxT(""));
 		if (_chan_count > 1) {
 			slider->set_label(wxString::Format(wxT("pan %d"), i+1));
