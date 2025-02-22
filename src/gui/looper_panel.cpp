@@ -54,6 +54,8 @@ enum {
 	ID_MuteButton,
 	ID_PauseButton,
 	ID_SoloButton,
+	ID_LoadButton,
+	ID_SaveButton,
 	
 	ID_ThreshControl,
 	ID_FeedbackControl,
@@ -182,18 +184,18 @@ LooperPanel::init()
 	
 	// ****** 1.SubRow
 	subColSizer = new wxBoxSizer(wxVERTICAL);
- 	subColSizer->Add (_undo_button, 0, 0, 5);
- 	subColSizer->Add (_redo_button, 0, wxTOP, 5);
+ 	subColSizer->Add (_undo_button, 0, wxTOP, 3);
+ 	subColSizer->Add (_redo_button, 0, wxTOP, 3);
 	subRowSizer->Add (subColSizer, 0, wxTop, 0);
 
 	// ****** 2.SubRow
 	subColSizer = new wxBoxSizer(wxVERTICAL);	
 
-	subColSizer->Add (_record_button, 1, wxLEFT, 5);
-	subColSizer->Add (_overdub_button, 1, wxTOP|wxLEFT, 5);
-	subColSizer->Add (_multiply_button, 1, wxTOP|wxLEFT, 5);
-
+	subColSizer->Add (_record_button, 0, wxLEFT | wxTOP, 3);
+	subColSizer->Add (_overdub_button, 0, wxLEFT | wxTOP | wxBOTTOM, 3);
+	subColSizer->Add (_multiply_button, 0, wxLEFT, 3);
 	subRowSizer->Add (subColSizer, 0, wxTop, 0);
+
 	colsizer->Add (subRowSizer, 0, wxTop| wxBOTTOM, 5);
 
 	
@@ -228,7 +230,7 @@ LooperPanel::init()
 	mainSizer->Add (colsizer, 0, wxEXPAND|wxBOTTOM, 5);
 
 
-	// **************** 3.Row   time area
+	// **************** 2.Row   time area
 	colsizer = new wxBoxSizer(wxVERTICAL);
 
 	_time_panel = new TimePanel(_loop_control, this, -1);
@@ -258,12 +260,12 @@ LooperPanel::init()
 	mainSizer->Add (colsizer, 0, wxEXPAND|wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
 
-	// ***** 4.Row
+	// ***** 3.Row
 
 	colsizer = new wxBoxSizer(wxVERTICAL);
 	subRowSizer = new wxBoxSizer(wxHORIZONTAL);
 
-	// ******* 1.Sub Row:
+	// ******* 3.Row - 1.Sub Row:
 	subColSizer = new wxBoxSizer(wxVERTICAL);	
 	
 	_sync_check = new CheckBox(this, ID_SyncCheck, wxT("sync"), true, wxDefaultPosition, wxSize(100, 24));
@@ -304,7 +306,7 @@ LooperPanel::init()
 
 	subRowSizer->Add (subColSizer, 0, wxLEFT, 0);
 
-	// ********** 2.SubRow	
+	// ********** 3 Row - 2.SubRow	
 	subColSizer = new wxBoxSizer(wxVERTICAL);	
   	
 	_name_text = new wxTextCtrl(this, ID_NameText, wxT(""), wxDefaultPosition, wxSize(200, 24), wxTE_PROCESS_ENTER|wxTE_LEFT, wxDefaultValidator, wxT("KeyAware"));
@@ -335,20 +337,23 @@ LooperPanel::init()
 
 	colsizer->Add (slider, 0, wxEXPAND | wxLEFT | wxRIGHT, 5);
 
-	// Add 4th row to mainsize:
+	// Add 3th row to mainsize:
 	mainSizer->Add (colsizer, 1, wxLEFT, 5);
 
 
-	//****** 5.Row
+	//****** 4.Row
 
 	// Mute, Solo & Pause
 	colsizer = new wxBoxSizer(wxVERTICAL);
 
-	colsizer->Add (_mute_button, 0, wxTOP | wxRIGHT, 0);
-	colsizer->Add (_solo_button, 0, wxTOP | wxRIGHT, 2);
-	colsizer->Add (_pause_button, 0, wxTOP | wxRIGHT, 2);
+	colsizer->Add (_mute_button, 0, wxTOP | wxRIGHT, 3);
+	colsizer->Add (_solo_button, 0, wxTOP | wxRIGHT, 3);
+	colsizer->Add (_pause_button, 0, wxTOP | wxRIGHT, 3);
+	colsizer->Add (_load_button, 0, wxTOP, 3);
+	colsizer->Add (_save_button, 0, wxTOP, 3);
 
-	mainSizer->Add (colsizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 5);
+
+	mainSizer->Add (colsizer, 0, wxEXPAND | wxBOTTOM | wxRIGHT, 5);
 
 
 	// Add final things:
@@ -510,7 +515,9 @@ LooperPanel::bind_events()
 	_loop_position->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::scratch_events), wxString(wxT("scratch_press"))));
 	_loop_position->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::scratch_events), wxString(wxT("scratch_release"))));
 
-	
+	_save_button->clicked.connect (sigc::bind(mem_fun (*this, &LooperPanel::clicked_events), wxString(wxT("save"))));
+	_load_button->clicked.connect (sigc::bind(mem_fun (*this, &LooperPanel::clicked_events), wxString(wxT("load"))));
+
 	_loop_control->MidiBindingChanged.connect (mem_fun (*this, &LooperPanel::got_binding_changed));
 	_loop_control->MidiLearnCancelled.connect (mem_fun (*this, &LooperPanel::got_learn_canceled));
 	
@@ -523,6 +530,8 @@ void LooperPanel::create_buttons()
  	_record_button = new PixButton(this, ID_RecordButton);
  	_overdub_button = new PixButton(this, ID_OverdubButton);
  	_multiply_button = new PixButton(this, ID_MultiplyButton);
+	_load_button = new PixButton(this, ID_LoadButton, false);
+ 	_save_button = new PixButton(this, ID_SaveButton, false);
  	_mute_button = new PixButton(this, ID_MuteButton);
  	_pause_button = new PixButton(this, ID_PauseButton);
  	_solo_button = new PixButton(this, ID_SoloButton);
@@ -576,7 +585,18 @@ void LooperPanel::create_buttons()
 	_solo_button->set_focus_bitmap (wxBitmap(solo_focus));
 	_solo_button->set_disabled_bitmap (wxBitmap(solo_disabled));
 	_solo_button->set_active_bitmap (wxBitmap(solo_active));
-	
+
+	_load_button->set_normal_bitmap (wxBitmap(load_normal));
+	_load_button->set_selected_bitmap (wxBitmap(load_selected));
+	_load_button->set_focus_bitmap (wxBitmap(load_focus));
+	_load_button->set_disabled_bitmap (wxBitmap(load_disabled));
+	_load_button->set_active_bitmap (wxBitmap(load_active));
+
+	_save_button->set_normal_bitmap (wxBitmap(save_normal));
+	_save_button->set_selected_bitmap (wxBitmap(save_selected));
+	_save_button->set_focus_bitmap (wxBitmap(save_focus));
+	_save_button->set_disabled_bitmap (wxBitmap(save_disabled));
+	_save_button->set_active_bitmap (wxBitmap(save_active));	
 }
 
 

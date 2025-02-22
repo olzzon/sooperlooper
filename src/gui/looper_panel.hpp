@@ -118,6 +118,8 @@ class LooperPanel
 	PixButton * _mute_button;
 	PixButton * _pause_button;
 	PixButton * _solo_button;
+	PixButton * _load_button;
+	PixButton * _save_button;
 
 	SliderBar * _thresh_control;
 	SliderBar * _in_gain_control;
