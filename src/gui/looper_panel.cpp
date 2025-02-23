@@ -163,8 +163,8 @@ LooperPanel::init()
 
 
 	// create all buttons first, then add them to sizers
-	// must do this because the bitmaps need to be loaded
-	// before adding to sizer
+	_buttonColorNormal = wxColour(77, 97, 133);
+	_buttonColorActive = wxColour(255, 0, 0);
 	create_buttons();
 	
 	int edgegap = 0;
@@ -503,8 +503,6 @@ void LooperPanel::create_buttons()
 
 }
 
-
-
 void
 LooperPanel::update_controls()
 {
@@ -785,20 +783,6 @@ LooperPanel::on_text_event (wxCommandEvent &ev)
 		_time_panel->SetFocus();
 	}
 }
-
-void
-LooperPanel::released_events (int button, wxString cmd)
-{
-	
-	if (button == PixButton::MiddleButton) {
-		// force up
-		_loop_control->post_up_event (_looperPanelIndex, cmd, true);
-	}
-	else {
-		_loop_control->post_up_event (_looperPanelIndex, cmd);
-	}
-}
-
 
 void
 LooperPanel::scratch_events (wxString cmd)
@@ -1152,6 +1136,7 @@ LooperPanel::post_control_event (wxString ctrl, float val)
 
 wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& buttonLabel, wxWindow* parent, wxWindowID id, bool midiBindable) {
     wxButton* button = new wxButton(parent, id, buttonLabel);
+	button->SetBackgroundColour(_buttonColorNormal);
     
     // Connect to existing event system using wxEVT_BUTTON
     button->Bind(wxEVT_BUTTON, [this, buttonName, button](wxCommandEvent& event) {
@@ -1165,7 +1150,6 @@ wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& 
 
     // Use EVT_LEFT_UP for release events
     button->Bind(wxEVT_LEFT_UP, [this, buttonName, button](wxMouseEvent& event) {
-        released_events(button->GetId(), buttonName.ToStdString());
 		if (button->GetId() == PixButton::MiddleButton) {
 			// force up
 			_loop_control->post_up_event (_looperPanelIndex, buttonName, true);
@@ -1195,11 +1179,11 @@ void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
     switch (state) {
         case Normal:
             button->Enable(true);
-            button->SetBackgroundColour(wxColour(77, 97, 133));
+            button->SetBackgroundColour(_buttonColorNormal);
             break;
         case Active:
             button->Enable(true);
-            button->SetBackgroundColour(wxColour(255, 0, 0));
+            button->SetBackgroundColour(_buttonColorActive);
 			break;
         case Disabled:
             button->Enable(false);

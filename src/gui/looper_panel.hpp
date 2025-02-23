@@ -109,7 +109,6 @@ class LooperPanel
 	void update_state();
 	void bind_events();
 
-	void released_events (int button, wxString cmd);
 	void scratch_events (wxString cmd);
 	void clicked_events (int button, wxString cmd);
 	void button_bind_events (wxString cmd);
@@ -137,6 +136,8 @@ class LooperPanel
 	wxColour   _selbgcolor;
 	wxColour   _learnbgcolor;
 	wxColour   _barGreen;
+	wxColour   _buttonColorNormal;
+	wxColour   _buttonColorActive;
 	
 	wxButton *  undoButton;
 	wxButton *  redoButton;
