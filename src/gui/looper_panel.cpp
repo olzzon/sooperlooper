@@ -841,29 +841,6 @@ LooperPanel::rate_bind_events (float val)
 	start_learning (info);
 }
 
-
-void
-LooperPanel::delay_button_press_event (int button)
-{
-	_tap_val *= -1.0f;
-	post_control_event (wxString(wxT("delay_trigger")), _tap_val);
-}
-
-void
-LooperPanel::delay_button_release_event (int button)
-{
-	if (button == PixButton::MiddleButton) {
-		_tap_val *= -1.0f;
-		post_control_event (wxString(wxT("delay_trigger")), _tap_val);
-	}
-}
-
-void
-LooperPanel::rate_button_event (int button, float rate)
-{
-	post_control_event (wxString(wxT("rate")), rate);
-}
-
 void
 LooperPanel::clicked_events (int button, wxString cmd)
 {
@@ -1148,15 +1125,14 @@ wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& 
         event.Skip();
     });
 
-    // Use EVT_LEFT_UP for release events
+    // Use EVT_LEFT_UP for release events - ToDo add middle button support
     button->Bind(wxEVT_LEFT_UP, [this, buttonName, button](wxMouseEvent& event) {
-		if (button->GetId() == PixButton::MiddleButton) {
-			// force up
-			_loop_control->post_up_event (_looperPanelIndex, buttonName, true);
-		}
-		else {
-			_loop_control->post_up_event (_looperPanelIndex, buttonName);
-		}
+		// if (button->GetId() == PixButton::MiddleButton) {
+		// 	_loop_control->post_up_event (_looperPanelIndex, buttonName, true);
+		// }
+		// else {
+		_loop_control->post_up_event (_looperPanelIndex, buttonName);
+		//}
         event.Skip();
     });
 

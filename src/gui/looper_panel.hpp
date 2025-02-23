@@ -35,7 +35,6 @@ namespace SooperLooper {
 
 namespace SooperLooperGui {
 
-class PixButton;
 class LoopControl;
 class TimePanel;
 class SliderBar;
@@ -112,9 +111,6 @@ class LooperPanel
 	void scratch_events (wxString cmd);
 	void clicked_events (int button, wxString cmd);
 	void button_bind_events (wxString cmd);
-	void delay_button_press_event (int button);
-	void delay_button_release_event (int button);
-	void rate_button_event(int button, float rate);
 	void rate_bind_events (float rate);
 	
 	void on_quantize_change (int index, wxString strval);
