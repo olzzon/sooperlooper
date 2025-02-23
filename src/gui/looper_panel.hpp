@@ -70,7 +70,8 @@ class LooperPanel
 	enum ButtonState {
 		Normal,
 		Active,
-		Disabled
+		Disabled,
+		Blinking
 	};
 	void SetButtonState(wxButton* button, ButtonState state);
 
@@ -129,12 +130,11 @@ class LooperPanel
 	PixButton * _record_button;
 	PixButton * _overdub_button;
 	PixButton * _multiply_button;
-	PixButton * _mute_button;
 	wxButton *  muteButton;
-	PixButton * _pause_button;
-	PixButton * _solo_button;
-	PixButton * _load_button;
-	PixButton * _save_button;
+	wxButton *  pauseButton;
+	wxButton *  soloButton;
+	wxButton *  loadButton;
+	wxButton *  saveButton;
 
 	SliderBar * _thresh_control;
 	SliderBar * _in_gain_control;
@@ -183,7 +183,9 @@ class LooperPanel
 	bool _has_discrete_io;
 	bool _waiting;
 
+//!!!!!!!! change _flashing_button when transition to wxButton is complete
 	PixButton * _flashing_button;
+	wxButton * _flashingButton;
 	wxTimer * _flash_timer;
 	
 private:

@@ -345,16 +345,23 @@ LooperPanel::init()
 
 	// Mute, Solo & Pause
 	colsizer = new wxBoxSizer(wxVERTICAL);
+	subRowSizer = new wxBoxSizer(wxHORIZONTAL);
+	
+	// ****** 4.Row - 1.SubRow
+	subColSizer = new wxBoxSizer(wxVERTICAL);
+	subColSizer->Add (muteButton, 0, wxTOP | wxLEFT | wxRIGHT, 3);
+	subColSizer->Add (soloButton, 0, wxTOP | wxLEFT | wxRIGHT, 3);
+	subColSizer->Add (pauseButton, 0, wxTOP | wxLEFT | wxRIGHT, 3);
+	subRowSizer->Add (subColSizer, 0, wxLEFT, 3);
+	
+	// ****** 4.Row - 2.SubRow
+	subColSizer = new wxBoxSizer(wxVERTICAL);
+	subColSizer->Add (loadButton, 0, wxLEFT | wxTOP, 3);
+	subColSizer->Add (saveButton, 0, wxLEFT | wxTOP, 3);
+	subRowSizer->Add (subColSizer, 0, wxLEFT, 3);
 
-	colsizer->Add (_mute_button, 0, wxTOP | wxRIGHT, 3);
-	colsizer->Add (muteButton, 0, wxTOP | wxRIGHT, 3);
-	colsizer->Add (_solo_button, 0, wxTOP | wxRIGHT, 3);
-	colsizer->Add (_pause_button, 0, wxTOP | wxRIGHT, 3);
-	colsizer->Add (_load_button, 0, wxTOP, 3);
-	colsizer->Add (_save_button, 0, wxTOP, 3);
 
-
-	mainSizer->Add (colsizer, 0, wxEXPAND | wxBOTTOM | wxRIGHT, 5);
+	mainSizer->Add (subRowSizer, 0, wxEXPAND | wxBOTTOM | wxRIGHT, 5);
 
 
 	// Add final things:
@@ -501,23 +508,8 @@ LooperPanel::bind_events()
 	_multiply_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("multiply"))));
 	_multiply_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("multiply"))));
 
-	_mute_button->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::pressed_events), wxString(wxT("mute"))));
-	_mute_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("mute"))));
-	_mute_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("mute"))));
-
-	_pause_button->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::pressed_events), wxString(wxT("pause"))));
-	_pause_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("pause"))));
-	_pause_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("pause"))));
-
-	_solo_button->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::pressed_events), wxString(wxT("solo"))));
-	_solo_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("solo"))));
-	_solo_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("solo"))));
-
 	_loop_position->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::scratch_events), wxString(wxT("scratch_press"))));
 	_loop_position->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::scratch_events), wxString(wxT("scratch_release"))));
-
-	_save_button->clicked.connect (sigc::bind(mem_fun (*this, &LooperPanel::clicked_events), wxString(wxT("save"))));
-	_load_button->clicked.connect (sigc::bind(mem_fun (*this, &LooperPanel::clicked_events), wxString(wxT("load"))));
 
 	_loop_control->MidiBindingChanged.connect (mem_fun (*this, &LooperPanel::got_binding_changed));
 	_loop_control->MidiLearnCancelled.connect (mem_fun (*this, &LooperPanel::got_learn_canceled));
@@ -531,12 +523,12 @@ void LooperPanel::create_buttons()
  	_record_button = new PixButton(this, ID_RecordButton);
  	_overdub_button = new PixButton(this, ID_OverdubButton);
  	_multiply_button = new PixButton(this, ID_MultiplyButton);
-	_load_button = new PixButton(this, ID_LoadButton, false);
- 	_save_button = new PixButton(this, ID_SaveButton, false);
-	 _mute_button = new PixButton(this, ID_MuteButton);
+
+	loadButton = CreateButton("load", "Load", this);
+ 	saveButton = CreateButton("save", "Save", this);
  	muteButton = CreateButton("mute", "Mute", this);
- 	_pause_button = new PixButton(this, ID_PauseButton);
- 	_solo_button = new PixButton(this, ID_SoloButton);
+	pauseButton = CreateButton("pause", "Pause", this);
+	soloButton = CreateButton("solo", "Solo", this);
 
 	
 	// load them all up manually
@@ -569,36 +561,7 @@ void LooperPanel::create_buttons()
 	_multiply_button->set_focus_bitmap (wxBitmap(multiply_focus));
 	_multiply_button->set_disabled_bitmap (wxBitmap(multiply_disabled));
 	_multiply_button->set_active_bitmap (wxBitmap(multiply_active));
-
-	_mute_button->set_normal_bitmap (wxBitmap(mute_normal));
-	_mute_button->set_selected_bitmap (wxBitmap(mute_selected));
-	_mute_button->set_focus_bitmap (wxBitmap(mute_focus));
-	_mute_button->set_disabled_bitmap (wxBitmap(mute_disabled));
-	_mute_button->set_active_bitmap (wxBitmap(mute_active));
-
-	_pause_button->set_normal_bitmap (wxBitmap(pause_normal));
-	_pause_button->set_selected_bitmap (wxBitmap(pause_selected));
-	_pause_button->set_focus_bitmap (wxBitmap(pause_focus));
-	_pause_button->set_disabled_bitmap (wxBitmap(pause_disabled));
-	_pause_button->set_active_bitmap (wxBitmap(pause_active));
-
-	_solo_button->set_normal_bitmap (wxBitmap(solo_normal));
-	_solo_button->set_selected_bitmap (wxBitmap(solo_selected));
-	_solo_button->set_focus_bitmap (wxBitmap(solo_focus));
-	_solo_button->set_disabled_bitmap (wxBitmap(solo_disabled));
-	_solo_button->set_active_bitmap (wxBitmap(solo_active));
-
-	_load_button->set_normal_bitmap (wxBitmap(load_normal));
-	_load_button->set_selected_bitmap (wxBitmap(load_selected));
-	_load_button->set_focus_bitmap (wxBitmap(load_focus));
-	_load_button->set_disabled_bitmap (wxBitmap(load_disabled));
-	_load_button->set_active_bitmap (wxBitmap(load_active));
-
-	_save_button->set_normal_bitmap (wxBitmap(save_normal));
-	_save_button->set_selected_bitmap (wxBitmap(save_selected));
-	_save_button->set_focus_bitmap (wxBitmap(save_focus));
-	_save_button->set_disabled_bitmap (wxBitmap(save_disabled));
-	_save_button->set_active_bitmap (wxBitmap(save_active));	
+	
 }
 
 
@@ -686,7 +649,7 @@ LooperPanel::update_controls()
     
 	if (_loop_control->is_updated(_index, wxT("is_soloed"))) {
 		_loop_control->get_value(_index, wxT("is_soloed"), val);
-		_solo_button->set_active(val > 0.0f);
+		SetButtonState(soloButton, val > 0.0f ? ButtonState::Active : ButtonState::Normal);
 	}
 
 	if (_loop_control->is_updated(_index, wxT("name"))) {
@@ -764,11 +727,10 @@ LooperPanel::update_state()
 		break;
 	case LooperStateMuted:
 	case LooperStateOffMuted:
-		_mute_button->set_active(false);
 		SetButtonState(muteButton, ButtonState::Normal);
 		break;
 	case LooperStatePaused:
-		_pause_button->set_active(false);
+		SetButtonState(pauseButton, ButtonState::Normal);
 		break;
 	default:
 		break;
@@ -794,13 +756,12 @@ LooperPanel::update_state()
 		break;
 	case LooperStateMuted:
 	case LooperStateOffMuted:
-		_mute_button->set_active(true);
 		SetButtonState(muteButton, ButtonState::Active);
-		_flashing_button = _mute_button;
+		//_flashing_button = muteButton;
 		break;
 	case LooperStatePaused:
-		_pause_button->set_active(true);
-		_flashing_button = _pause_button;
+		SetButtonState(pauseButton, ButtonState::Active);
+		// _flashing_button = pauseButton;
 		break;
 	default:
 		break;
@@ -825,11 +786,11 @@ LooperPanel::update_state()
 			case LooperStateMuted:
 			case LooperStateOffMuted:
 				if (state == LooperStatePlaying)
-					_flashing_button = _mute_button;
+					//_flashing_button = muteButton;
 				break;
 			case LooperStatePlaying:
 				if( state == LooperStateMuted) {
-					_flashing_button = _mute_button;
+					//_flashing_button = muteButton;
 				}
 				break;
 			default:
@@ -847,7 +808,7 @@ LooperPanel::update_state()
 
 		if (_flash_timer->IsRunning()) {
 			_flash_timer->Stop();
-			_solo_button->set_active(soloed);
+			SetButtonState(soloButton, soloed ? ButtonState::Active : ButtonState::Normal);
 		}
 
 	}
@@ -1290,11 +1251,15 @@ void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
             break;
         case Active:
             button->Enable(true);
-            button->SetBackgroundColour(wxColour(255, 0, 0));  // or whatever color indicates selection
-            break;
+            button->SetBackgroundColour(wxColour(255, 0, 0));
         case Disabled:
             button->Enable(false);
             break;
+		case Blinking:
+			button->Enable(true);
+			button->SetBackgroundColour(wxColour(255, 0, 0)); 
+			//We need to find a way to add blinking to the wx Button
+			break;
     }
     button->Refresh();
 }
