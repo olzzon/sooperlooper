@@ -102,10 +102,20 @@ END_EVENT_TABLE()
 	_has_discrete_io = false;
 	_waiting = 0;
 	_flashingButton = 0;
-	_showFullPanel =  _loop_control->request_global_control_value(wxT("show_full_looper_panel"));
 
 	_flash_timer = new wxTimer(this, ID_FlashTimer);
-	
+
+	float panel_state = 0.0f;
+	bool got_value = _loop_control->get_global_value("show_full_looper_panel", panel_state);
+
+	if (got_value) {
+		_showFullPanel = (panel_state > 0.0f);
+	} else {
+		// Handle case where we couldn't get the value
+		// Usually default to false or previous state
+		_showFullPanel = false;
+	}
+
 	init();
 }
 

@@ -314,7 +314,7 @@ void LatencyPanel::on_check (wxCommandEvent &ev)
 		lcontrol.post_ctrl_change (-2, wxT("auto_disable_latency"), _auto_disable_check->GetValue() ? 1.0f : 0.0f);
 	}
 	else if (ev.GetId() == ID_ShowFullPanelCheck) {
-		lcontrol.post_ctrl_change (-2, wxT("show_full_looper_panel"), _show_full_panel_check->GetValue() ? 1.0f : 0.0f);
+		lcontrol.post_global_ctrl_change(wxT("show_full_looper_panel"), _show_full_panel_check->GetValue() ? 1.0f : 0.0f);
 	}
     
 
