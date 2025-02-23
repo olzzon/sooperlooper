@@ -534,7 +534,7 @@ void LooperPanel::create_buttons()
 	_load_button = new PixButton(this, ID_LoadButton, false);
  	_save_button = new PixButton(this, ID_SaveButton, false);
 	 _mute_button = new PixButton(this, ID_MuteButton);
- 	muteButton = CreateButton("Mute", "mute", this);
+ 	muteButton = CreateButton("mute", "Mute", this);
  	_pause_button = new PixButton(this, ID_PauseButton);
  	_solo_button = new PixButton(this, ID_SoloButton);
 
