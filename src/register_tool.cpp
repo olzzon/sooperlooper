@@ -53,6 +53,7 @@ register_global_updates(const string & path="/ctrl", bool unreg=false)
 	lo_send(_osc_addr, buf, "sss", "dry", _our_url.c_str(), path.c_str());
 	lo_send(_osc_addr, buf, "sss", "input_gain", _our_url.c_str(), path.c_str());
 	lo_send(_osc_addr, buf, "sss", "auto_disable_latency", _our_url.c_str(), path.c_str());
+	lo_send(_osc_addr, buf, "sss", "show_full_looper_panel", _our_url.c_str(), path.c_str());
 	lo_send(_osc_addr, buf, "sss", "output_midi_clock", _our_url.c_str(), path.c_str());
 	lo_send(_osc_addr, buf, "sss", "use_midi_stop", _our_url.c_str(), path.c_str());
 	lo_send(_osc_addr, buf, "sss", "use_midi_start", _our_url.c_str(), path.c_str());

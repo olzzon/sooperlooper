@@ -1930,7 +1930,6 @@ Engine::process_nonrt_event (EventNonRT * event)
 		}
 		else if (gs_event->param == "show_full_looper_panel") {
 			_show_full_looper_panel = gs_event->value;
-			//cerr << "NEED TO setting disable_compensation " << endl;
 		}
 		else if (gs_event->param == "jack_timebase_master") {
 			bool flag = gs_event->value > 0.0f;

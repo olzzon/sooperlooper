@@ -102,6 +102,7 @@ END_EVENT_TABLE()
 	_has_discrete_io = false;
 	_waiting = 0;
 	_flashingButton = 0;
+	_showFullPanel =  _loop_control->request_global_control_value(wxT("show_full_looper_panel"));
 
 	_flash_timer = new wxTimer(this, ID_FlashTimer);
 	
@@ -346,11 +347,12 @@ LooperPanel::init()
 	subRowSizer->Add (subColSizer, 0, wxLEFT, 3);
 	
 	// ****** 4.Row - 2.SubRow
-	subColSizer = new wxBoxSizer(wxVERTICAL);
-	subColSizer->Add (loadButton, 0, wxLEFT | wxTOP, 3);
-	subColSizer->Add (saveButton, 0, wxLEFT | wxTOP, 3);
-	subRowSizer->Add (subColSizer, 0, wxLEFT | wxTOP | wxBOTTOM, 3);
-
+	if (_showFullPanel) {
+		subColSizer = new wxBoxSizer(wxVERTICAL);
+		subColSizer->Add (loadButton, 0, wxLEFT | wxTOP, 3);
+		subColSizer->Add (saveButton, 0, wxLEFT | wxTOP, 3);
+		subRowSizer->Add (subColSizer, 0, wxLEFT | wxTOP | wxBOTTOM, 3);
+	}
 
 	mainSizer->Add (subRowSizer, 0, wxEXPAND | wxBOTTOM | wxRIGHT, 5);
 

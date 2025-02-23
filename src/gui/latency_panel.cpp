@@ -171,9 +171,6 @@ void LatencyPanel::init()
 	
 	colsizer->Add (rowsizer, 0, wxEXPAND|wxALL, 6);
 
-	_show_full_panel_check = new wxCheckBox(this, ID_ShowFullPanelCheck, wxT("Show the full looper panel"));
-	colsizer->Add (_show_full_panel_check, 0, wxEXPAND|wxALL, 10);
-
 	_auto_disable_check = new wxCheckBox(this, ID_AutoDisableCheck, wxT("Automatically Disable Compensation when Monitoring Input"));
 	colsizer->Add (_auto_disable_check, 0, wxEXPAND|wxALL, 10);
 
@@ -181,6 +178,9 @@ void LatencyPanel::init()
 	topsizer->Add(colsizer, 0, wxALL|wxEXPAND, 3);
 
 	topsizer->Add(1,15, 0);
+
+	_show_full_panel_check = new wxCheckBox(this, ID_ShowFullPanelCheck, wxT("Show the full looper panel"));
+	topsizer->Add (_show_full_panel_check, 0, wxEXPAND|wxALL, 4);
 
 	_round_tempo_integer_check = new wxCheckBox(this, ID_RoundTempoInteger, wxT("Round tempo to integer values on Record"));
 	topsizer->Add (_round_tempo_integer_check, 0, wxEXPAND|wxALL, 4);
