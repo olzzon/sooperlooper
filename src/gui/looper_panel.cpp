@@ -1179,9 +1179,9 @@ void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
 					flash_state = !flash_state;
 					
 					if (flash_state) {
-						button->SetBackgroundColour(wxColour(200, 200, 200)); // Flash on color
+						button->SetBackgroundColour(_buttonColorActive); // Flash on color
 					} else {
-						button->SetBackgroundColour(wxColour(30, 30, 30)); // Flash off color
+						button->SetBackgroundColour(_buttonColorNormal); // Flash off color
 					}
 					button->Refresh();
 				}, timer->GetId());
