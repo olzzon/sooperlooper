@@ -60,6 +60,24 @@ class LooperPanel
 
 	void set_selected (bool flag);
 
+	wxButton* CreateButton(const wxString& buttonName, 
+		wxWindow* parent, 
+		wxWindowID id = wxID_ANY,
+		bool midiBindable = true
+	);	
+	enum ButtonState {
+		Normal,
+		Active,
+		Disabled
+	};
+	void SetButtonState(wxButton* button, ButtonState state);
+
+
+	// Generic event handlers
+	void OnButtonPressed(wxCommandEvent& event);
+	void OnButtonReleased(wxCommandEvent& event);
+	void OnButtonBindRequest(wxCommandEvent& event);
+
   protected:
 
 	void init();
@@ -116,6 +134,7 @@ class LooperPanel
 	PixButton * _overdub_button;
 	PixButton * _multiply_button;
 	PixButton * _mute_button;
+	wxButton *  muteButton;
 	PixButton * _pause_button;
 	PixButton * _solo_button;
 	PixButton * _load_button;

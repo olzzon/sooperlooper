@@ -347,6 +347,7 @@ LooperPanel::init()
 	colsizer = new wxBoxSizer(wxVERTICAL);
 
 	colsizer->Add (_mute_button, 0, wxTOP | wxRIGHT, 3);
+	colsizer->Add (muteButton, 0, wxTOP | wxRIGHT, 3);
 	colsizer->Add (_solo_button, 0, wxTOP | wxRIGHT, 3);
 	colsizer->Add (_pause_button, 0, wxTOP | wxRIGHT, 3);
 	colsizer->Add (_load_button, 0, wxTOP, 3);
@@ -532,7 +533,8 @@ void LooperPanel::create_buttons()
  	_multiply_button = new PixButton(this, ID_MultiplyButton);
 	_load_button = new PixButton(this, ID_LoadButton, false);
  	_save_button = new PixButton(this, ID_SaveButton, false);
- 	_mute_button = new PixButton(this, ID_MuteButton);
+	 _mute_button = new PixButton(this, ID_MuteButton);
+ 	muteButton = CreateButton("Mute", this);
  	_pause_button = new PixButton(this, ID_PauseButton);
  	_solo_button = new PixButton(this, ID_SoloButton);
 
@@ -763,6 +765,7 @@ LooperPanel::update_state()
 	case LooperStateMuted:
 	case LooperStateOffMuted:
 		_mute_button->set_active(false);
+		SetButtonState(muteButton, ButtonState::Normal);
 		break;
 	case LooperStatePaused:
 		_pause_button->set_active(false);
@@ -792,6 +795,7 @@ LooperPanel::update_state()
 	case LooperStateMuted:
 	case LooperStateOffMuted:
 		_mute_button->set_active(true);
+		SetButtonState(muteButton, ButtonState::Active);
 		_flashing_button = _mute_button;
 		break;
 	case LooperStatePaused:
@@ -1244,3 +1248,51 @@ LooperPanel::post_control_event (wxString ctrl, float val)
 	_loop_control->post_ctrl_change (_index, ctrl, val);
 }
 
+
+wxButton* LooperPanel::CreateButton(const wxString& buttonName, wxWindow* parent, wxWindowID id, bool midiBindable) {
+    wxButton* button = new wxButton(parent, id, buttonName);
+    
+    // Connect to existing event system using wxEVT_BUTTON
+    button->Bind(wxEVT_BUTTON, [this, buttonName](wxCommandEvent& event) {
+        if (event.GetEventType() == wxEVT_BUTTON) {
+            // If button is being held down
+            pressed_events(0, buttonName.ToStdString());
+        }
+    });
+
+    // Use EVT_LEFT_UP for release events
+    button->Bind(wxEVT_LEFT_UP, [this, buttonName](wxMouseEvent& event) {
+        released_events(0, buttonName.ToStdString());
+        event.Skip();
+    });
+
+	if (midiBindable) {
+	// Right click for bind menu, should be similar to original PixButton
+    // button->Bind(wxEVT_RIGHT_UP, [this, buttonName](wxMouseEvent& event) {
+    //     wxMenu menu;
+	// use startlearning?? or something like this?
+    //     menu.Append(ID_BindMidi, wxT("Learn MIDI binding"));
+    //     PopupMenu(&menu);
+    //     event.Skip();
+    // });
+	}
+
+    return button;
+}
+
+void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
+    switch (state) {
+        case Normal:
+            button->Enable(true);
+            button->SetBackgroundColour(wxNullColour);
+            break;
+        case Active:
+            button->Enable(true);
+            button->SetBackgroundColour(wxColour(255, 0, 0));  // or whatever color indicates selection
+            break;
+        case Disabled:
+            button->Enable(false);
+            break;
+    }
+    button->Refresh();
+}
