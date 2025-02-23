@@ -91,7 +91,7 @@ BEGIN_EVENT_TABLE(LooperPanel, wxPanel)
 END_EVENT_TABLE()
 
 	LooperPanel::LooperPanel(MainPanel * mainpan, LoopControl * control, wxWindow * parent, wxWindowID id, const wxPoint& pos, const wxSize& size)
-	: wxPanel(parent, id, pos, size), _loop_control(control), _index(0), _last_state(LooperStateUnknown), _tap_val(1.0f)
+	: wxPanel(parent, id, pos, size), _loop_control(control), _looperPanelIndex(0), _last_state(LooperStateUnknown), _tap_val(1.0f)
 {
 	_mainpanel = mainpan;
 	_learning = false;
@@ -225,7 +225,7 @@ LooperPanel::init()
 	colsizer = new wxBoxSizer(wxVERTICAL);
 
 	_time_panel = new TimePanel(_loop_control, this, -1);
-	_time_panel->set_index (_index);
+	_time_panel->set_index (_looperPanelIndex);
 	
 	colsizer->Add (_time_panel, 0, wxLEFT, 5);
 	
@@ -381,7 +381,7 @@ LooperPanel::post_init()
 
 	// without discrete i/o mains are the only option
 	float val;
-	if (_loop_control->get_value(_index, wxT("has_discrete_io"), val) && val != 0.0f)
+	if (_loop_control->get_value(_looperPanelIndex, wxT("has_discrete_io"), val) && val != 0.0f)
 	{
 		_has_discrete_io = true;
 
@@ -469,10 +469,10 @@ LooperPanel::set_selected (bool flag)
 }
 
 void
-LooperPanel::set_index(int ind)
+LooperPanel::set_index(int looperPanelIndex)
 {
-	_index = ind;
-	_time_panel->set_index (_index);
+	_looperPanelIndex = looperPanelIndex;
+	_time_panel->set_index (_looperPanelIndex);
 }
 
 
@@ -512,90 +512,90 @@ LooperPanel::update_controls()
 	float val;
 
 	// first see if we have channel count yet
-	if (_chan_count == 0 && _loop_control->is_updated(_index, wxT("channel_count"))
-	    && _loop_control->is_updated(_index, wxT("has_discrete_io")))
+	if (_chan_count == 0 && _loop_control->is_updated(_looperPanelIndex, wxT("channel_count"))
+	    && _loop_control->is_updated(_looperPanelIndex, wxT("has_discrete_io")))
 	{
-		_loop_control->get_value(_index, wxT("channel_count"), val);
+		_loop_control->get_value(_looperPanelIndex, wxT("channel_count"), val);
 		_chan_count = (int) val;
 		// do post_init
 		post_init();
 	}
 	
-	if (_loop_control->is_updated(_index, wxT("feedback"))) {
-		_loop_control->get_value(_index, wxT("feedback"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("feedback"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("feedback"), val);
 		//_feedback_control->set_value ((val * 100.0f));
 	}
-	if (_loop_control->is_updated(_index, wxT("input_gain"))) {
-		_loop_control->get_value(_index, wxT("input_gain"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("input_gain"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("input_gain"), val);
 		_in_gain_control->set_value (val);
 	}
-	if (_loop_control->is_updated(_index, wxT("rec_thresh"))) {
-		_loop_control->get_value(_index, wxT("rec_thresh"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("rec_thresh"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("rec_thresh"), val);
 		_thresh_control->set_value (val);
 	}
 
 	if (_has_discrete_io) {
-		if (_loop_control->is_updated(_index, wxT("in_peak_meter"))) {
-			_loop_control->get_value(_index, wxT("in_peak_meter"), val);
+		if (_loop_control->is_updated(_looperPanelIndex, wxT("in_peak_meter"))) {
+			_loop_control->get_value(_looperPanelIndex, wxT("in_peak_meter"), val);
 			_thresh_control->set_indicator_value (val);
 		}
 
-		if (_loop_control->is_updated(_index, wxT("dry"))) {
-			_loop_control->get_value(_index, wxT("dry"), val);
+		if (_loop_control->is_updated(_looperPanelIndex, wxT("dry"))) {
+			_loop_control->get_value(_looperPanelIndex, wxT("dry"), val);
 			_dry_control->set_value (val);
 		}
 	}
 	else {
-		if (_loop_control->is_updated(_index, wxT("in_peak_meter"))) {
-			_loop_control->get_value(_index, wxT("in_peak_meter"), val);
+		if (_loop_control->is_updated(_looperPanelIndex, wxT("in_peak_meter"))) {
+			_loop_control->get_value(_looperPanelIndex, wxT("in_peak_meter"), val);
 			_thresh_control->set_indicator_value (val);
 		}
 	}
 
-	if (_loop_control->is_updated(_index, wxT("out_peak_meter"))) {
-		_loop_control->get_value(_index, wxT("out_peak_meter"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("out_peak_meter"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("out_peak_meter"), val);
 		_wet_control->set_indicator_value (val);
 	}
-	if (_loop_control->is_updated(_index, wxT("wet"))) {
-		_loop_control->get_value(_index, wxT("wet"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("wet"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("wet"), val);
 		_wet_control->set_value (val);
 	}
-	if (_loop_control->is_updated(_index, wxT("scratch_pos"))) {
-		_loop_control->get_value(_index, wxT("scratch_pos"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("scratch_pos"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("scratch_pos"), val);
 		_loop_position->set_value (val);
 		_loop_position->set_indicator_value (val);
 	}
-	if (_loop_control->is_updated(_index, wxT("sync"))) {
-		_loop_control->get_value(_index, wxT("sync"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("sync"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("sync"), val);
 		_sync_check->set_value (val > 0.0f);
 	}
-	if (_loop_control->is_updated(_index, wxT("playback_sync"))) {
-		_loop_control->get_value(_index, wxT("playback_sync"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("playback_sync"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("playback_sync"), val);
 		_play_sync_check->set_value (val > 0.0f);
 	}
-	if (_loop_control->is_updated(_index, wxT("use_feedback_play"))) {
-		_loop_control->get_value(_index, wxT("use_feedback_play"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("use_feedback_play"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("use_feedback_play"), val);
 		_play_feed_check->set_value (val > 0.0f);
 	}
-	if (_loop_control->is_updated(_index, wxT("tempo_stretch"))) {
-		_loop_control->get_value(_index, wxT("tempo_stretch"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("tempo_stretch"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("tempo_stretch"), val);
 		_tempo_stretch_check->set_value (val > 0.0f);
 	}
-	if (_loop_control->is_updated(_index, wxT("discrete_prefader"))) {
-		_loop_control->get_value(_index, wxT("discrete_prefader"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("discrete_prefader"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("discrete_prefader"), val);
 		_prefader_check->set_value (val > 0.0f);
 	}
     
-	if (_loop_control->is_updated(_index, wxT("is_soloed"))) {
-		_loop_control->get_value(_index, wxT("is_soloed"), val);
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("is_soloed"))) {
+		_loop_control->get_value(_looperPanelIndex, wxT("is_soloed"), val);
 		SetButtonState(soloButton, val > 0.0f ? ButtonState::Active : ButtonState::Normal);
 	}
 
-	if (_loop_control->is_updated(_index, wxT("name"))) {
+	if (_loop_control->is_updated(_looperPanelIndex, wxT("name"))) {
 		wxString prop;
-		_loop_control->get_property(_index, wxT("name"), prop);
+		_loop_control->get_property(_looperPanelIndex, wxT("name"), prop);
 		if (prop.IsEmpty()) {
-			wxString tmpname = wxString::Format(wxT("LOOP %d"), _index+1);
+			wxString tmpname = wxString::Format(wxT("LOOP %d"), _looperPanelIndex+1);
 			_name_text->SetValue(tmpname);
 		} else {
 			_name_text->SetValue(prop);
@@ -604,16 +604,16 @@ LooperPanel::update_controls()
 
 	for (int i=0; i < _chan_count; ++i) {
 		wxString panstr = wxString::Format(wxT("pan_%d"), i+1);
-		if (_loop_control->is_updated(_index, panstr)) {
-			_loop_control->get_value(_index, panstr, val);
+		if (_loop_control->is_updated(_looperPanelIndex, panstr)) {
+			_loop_control->get_value(_looperPanelIndex, panstr, val);
 			_panners[i]->set_value (val);
 		}
 	}
 
 	
-	bool state_updated = _loop_control->is_updated(_index, wxT("state"));
-	bool pos_updated = _loop_control->is_updated(_index, wxT("loop_pos"));
-	bool waiting_updated = _loop_control->is_updated(_index, wxT("waiting"));
+	bool state_updated = _loop_control->is_updated(_looperPanelIndex, wxT("state"));
+	bool pos_updated = _loop_control->is_updated(_looperPanelIndex, wxT("loop_pos"));
+	bool waiting_updated = _loop_control->is_updated(_looperPanelIndex, wxT("waiting"));
 
 	if (_time_panel->update_time()) {
 		_time_panel->Refresh(false);
@@ -625,8 +625,8 @@ LooperPanel::update_controls()
 
 	if (pos_updated) {
 		float looplen;
-		_loop_control->get_value(_index, wxT("loop_len"), looplen);
-		_loop_control->get_value(_index, wxT("loop_pos"), val);
+		_loop_control->get_value(_looperPanelIndex, wxT("loop_len"), looplen);
+		_loop_control->get_value(_looperPanelIndex, wxT("loop_pos"), val);
 		_loop_position->set_indicator_value (val / looplen);
 	}
 }
@@ -640,10 +640,10 @@ LooperPanel::update_state()
 	float val;
 	float soloed = false;
 
-	_loop_control->get_state(_index, state, statestr);
-	_loop_control->get_next_state(_index, nextstate, nstatestr);
-	_loop_control->get_value(_index, wxT("waiting"), val);
-	_loop_control->get_value(_index, wxT("is_soloed"), soloed);
+	_loop_control->get_state(_looperPanelIndex, state, statestr);
+	_loop_control->get_next_state(_looperPanelIndex, nextstate, nstatestr);
+	_loop_control->get_value(_looperPanelIndex, wxT("waiting"), val);
+	_loop_control->get_value(_looperPanelIndex, wxT("is_soloed"), soloed);
 	_waiting = (val > 0.0f) ? true : false;
 
 	if (!_waiting && _flashingButton) {
@@ -780,17 +780,10 @@ LooperPanel::on_text_event (wxCommandEvent &ev)
 		cerr << "Got text event" << endl;
 
 		// commit change
-		_loop_control->post_property_change(_index, wxT("name"), _name_text->GetValue());
+		_loop_control->post_property_change(_looperPanelIndex, wxT("name"), _name_text->GetValue());
 
 		_time_panel->SetFocus();
 	}
-}
-
-
-void
-LooperPanel::pressed_events (int button, wxString cmd)
-{
-	_loop_control->post_down_event (_index, cmd);
 }
 
 void
@@ -799,10 +792,10 @@ LooperPanel::released_events (int button, wxString cmd)
 	
 	if (button == PixButton::MiddleButton) {
 		// force up
-		_loop_control->post_up_event (_index, cmd, true);
+		_loop_control->post_up_event (_looperPanelIndex, cmd, true);
 	}
 	else {
-		_loop_control->post_up_event (_index, cmd);
+		_loop_control->post_up_event (_looperPanelIndex, cmd);
 	}
 }
 
@@ -815,11 +808,11 @@ LooperPanel::scratch_events (wxString cmd)
 	if (cmd == wxT("scratch_press") && (_last_state != LooperStateScratching)) {
 		// toggle scratch on
 		_scratch_pressed = true;
-		_loop_control->post_down_event (_index, wxT("scratch"));
+		_loop_control->post_down_event (_looperPanelIndex, wxT("scratch"));
 	}
 	else if (_scratch_pressed) {
 		// toggle scratch off
-		_loop_control->post_down_event (_index, wxT("scratch"));
+		_loop_control->post_down_event (_looperPanelIndex, wxT("scratch"));
 		_scratch_pressed = false;
 	}
 }
@@ -840,7 +833,7 @@ LooperPanel::button_bind_events (wxString cmd)
 	} else {
 		info.command = "note"; // should this be something else?
 	}
-	info.instance = _index;
+	info.instance = _looperPanelIndex;
 	info.lbound = 0.0f;
 	info.ubound = 1.0f;
 
@@ -857,7 +850,7 @@ LooperPanel::rate_bind_events (float val)
 	info.control = "rate";
 
 	info.command = "set";
-	info.instance = _index;
+	info.instance = _looperPanelIndex;
 	info.lbound = val;
 	info.ubound = val;
 
@@ -902,7 +895,7 @@ LooperPanel::clicked_events (int button, wxString cmd)
 				filename += wxT(".wav");
 			}
 			// todo: specify format
-			_loop_control->post_save_loop (_index, filename);
+			_loop_control->post_save_loop (_looperPanelIndex, filename);
 		}
 	}
 	else if (cmd == wxT("load"))
@@ -911,7 +904,7 @@ LooperPanel::clicked_events (int button, wxString cmd)
 		
 		if ( !filename.empty() )
 		{
-			_loop_control->post_load_loop (_index, filename);
+			_loop_control->post_load_loop (_looperPanelIndex, filename);
 		}
 	}
 }
@@ -974,7 +967,7 @@ LooperPanel::control_bind_events(int id)
 	info.channel = 0;
 	info.type = "cc";
 	info.command = "set";
-	info.instance = _index;
+	info.instance = _looperPanelIndex;
 	info.lbound = 0.0f;
 	info.ubound = 1.0f;
 
@@ -1069,7 +1062,7 @@ void LooperPanel::pan_bind_events(int chan)
 	info.channel = 0;
 	info.type = "cc";
 	info.command = "set";
-	info.instance = _index;
+	info.instance = _looperPanelIndex;
 	info.lbound = 0.0f;
 	info.ubound = 1.0f;
 	info.style = MidiBindInfo::NormalStyle;
@@ -1153,7 +1146,7 @@ void LooperPanel::on_quantize_change (int index, wxString strval)
 void
 LooperPanel::post_control_event (wxString ctrl, float val)
 {
-	_loop_control->post_ctrl_change (_index, ctrl, val);
+	_loop_control->post_ctrl_change (_looperPanelIndex, ctrl, val);
 }
 
 
@@ -1166,13 +1159,20 @@ wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& 
     });
 
 	button->Bind(wxEVT_LEFT_DOWN, [this, buttonName, button](wxMouseEvent& event) {
-        pressed_events(button->GetId(), buttonName.ToStdString());
+		_loop_control->post_down_event (_looperPanelIndex, buttonName.ToStdString());
         event.Skip();
     });
 
     // Use EVT_LEFT_UP for release events
     button->Bind(wxEVT_LEFT_UP, [this, buttonName, button](wxMouseEvent& event) {
         released_events(button->GetId(), buttonName.ToStdString());
+		if (button->GetId() == PixButton::MiddleButton) {
+			// force up
+			_loop_control->post_up_event (_looperPanelIndex, buttonName, true);
+		}
+		else {
+			_loop_control->post_up_event (_looperPanelIndex, buttonName);
+		}
         event.Skip();
     });
 

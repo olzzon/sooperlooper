@@ -65,8 +65,8 @@ class LooperPanel
 	LooperPanel (MainPanel * mainpan, LoopControl * control, wxWindow * parent, wxWindowID id=-1,  const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize);
 	virtual ~LooperPanel();
 
-	void set_index(int ind);
-	int get_index() { return _index; }
+	void set_index(int looperPanelIndex);
+	int get_index() { return _looperPanelIndex; }
 
 	void update_controls();
 
@@ -109,7 +109,6 @@ class LooperPanel
 	void update_state();
 	void bind_events();
 
-	void pressed_events (int button, wxString cmd);
 	void released_events (int button, wxString cmd);
 	void scratch_events (wxString cmd);
 	void clicked_events (int button, wxString cmd);
@@ -186,7 +185,7 @@ class LooperPanel
 	LoopControl * _loop_control;
 	MainPanel  * _mainpanel;
 	
-	int _index;
+	int _looperPanelIndex;
 	int _chan_count;
 	
 	SooperLooper::LooperState _last_state;
