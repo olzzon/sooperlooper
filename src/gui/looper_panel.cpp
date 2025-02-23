@@ -1244,10 +1244,15 @@ wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& 
 }
 
 void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
+	// Ensure any flashing timer is stopped upon state change
+	if (button->GetClientObject()) {
+		button->SetClientObject(nullptr); // This will delete the timer
+	}
+	
     switch (state) {
         case Normal:
             button->Enable(true);
-            button->SetBackgroundColour(wxNullColour);
+            button->SetBackgroundColour(wxColour(77, 97, 133));
             break;
         case Active:
             button->Enable(true);
@@ -1257,9 +1262,31 @@ void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
             break;
 		case Blinking:
 			button->Enable(true);
-			button->SetBackgroundColour(wxColour(255, 0, 0)); 
-			//We need to find a way to add blinking to the wx Button
+			
+			// Create and setup flash timer if not already exists
+			if (!button->GetClientObject()) {
+				wxTimer* timer = new wxTimer(this);
+				ButtonFlashTimer* flashTimer = new ButtonFlashTimer(timer);
+				button->SetClientObject(flashTimer);
+				
+				// Bind timer event using a lambda to capture the button
+				this->Bind(wxEVT_TIMER, [this, button](wxTimerEvent& event) {
+					static bool flash_state = false;
+					flash_state = !flash_state;
+					
+					if (flash_state) {
+						button->SetBackgroundColour(wxColour(200, 200, 200)); // Flash on color
+					} else {
+						button->SetBackgroundColour(wxNullColour); // Flash off color
+					}
+					button->Refresh();
+				}, timer->GetId());
+				
+				// Start timer with 500ms interval (2 Hz flash rate)
+				timer->Start(500);
+			}
 			break;
+			
     }
     button->Refresh();
 }

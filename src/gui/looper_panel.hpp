@@ -43,6 +43,18 @@ class ChoiceBox;
 class CheckBox;
 class MainPanel;
 class SpinBox;
+
+class ButtonFlashTimer : public wxClientData {
+	public:
+		ButtonFlashTimer(wxTimer* t) : timer(t) {}
+		~ButtonFlashTimer() { 
+			if (timer) {
+				timer->Stop();
+				delete timer;
+			}
+		}
+		wxTimer* timer;
+	};
 	
 class LooperPanel
 	: public wxPanel, public sigc::trackable
