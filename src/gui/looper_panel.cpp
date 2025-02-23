@@ -1253,16 +1253,18 @@ wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& 
     wxButton* button = new wxButton(parent, id, buttonLabel);
     
     // Connect to existing event system using wxEVT_BUTTON
-    button->Bind(wxEVT_BUTTON, [this, buttonName](wxCommandEvent& event) {
-        if (event.GetEventType() == wxEVT_BUTTON) {
-            // If button is being held down
-            pressed_events(0, buttonName.ToStdString());
-        }
+    button->Bind(wxEVT_BUTTON, [this, buttonName, button](wxCommandEvent& event) {
+		clicked_events(button->GetId(), buttonName.ToStdString());
+    });
+
+	button->Bind(wxEVT_LEFT_DOWN, [this, buttonName, button](wxMouseEvent& event) {
+        pressed_events(button->GetId(), buttonName.ToStdString());
+        event.Skip();
     });
 
     // Use EVT_LEFT_UP for release events
-    button->Bind(wxEVT_LEFT_UP, [this, buttonName](wxMouseEvent& event) {
-        released_events(0, buttonName.ToStdString());
+    button->Bind(wxEVT_LEFT_UP, [this, buttonName, button](wxMouseEvent& event) {
+        released_events(button->GetId(), buttonName.ToStdString());
         event.Skip();
     });
 
