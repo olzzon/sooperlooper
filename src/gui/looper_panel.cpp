@@ -177,15 +177,15 @@ LooperPanel::init()
 	subColSizer = new wxBoxSizer(wxVERTICAL);
  	subColSizer->Add (undoButton, 0, wxTOP, 3);
  	subColSizer->Add (redoButton, 0, wxTOP, 3);
-	 subRowSizer->Add (subColSizer, 0, wxTop, 0);
+	subRowSizer->Add (subColSizer, 0, wxLEFT | wxTop, 5);
 	 
 	// ****** 2.SubRow
 	subColSizer = new wxBoxSizer(wxVERTICAL);	
 	
-	subColSizer->Add (recordButton, 0, wxTop, 3);
-	subColSizer->Add (overdubButton, 0, wxTop, 3);
-	subColSizer->Add (multiplyButton, 0, wxLEFT, 3);
-	subRowSizer->Add (subColSizer, 0, wxTop, 0);
+	subColSizer->Add (recordButton, 0, wxTop, 5);
+	subColSizer->Add (overdubButton, 0, wxTop, 5);
+	subColSizer->Add (multiplyButton, 0, wxTop, 5);
+	subRowSizer->Add (subColSizer, 0, wxLEFT, 5);
 
 	colsizer->Add (subRowSizer, 0, wxTop| wxBOTTOM, 5);
 
@@ -349,7 +349,7 @@ LooperPanel::init()
 	subColSizer = new wxBoxSizer(wxVERTICAL);
 	subColSizer->Add (loadButton, 0, wxLEFT | wxTOP, 3);
 	subColSizer->Add (saveButton, 0, wxLEFT | wxTOP, 3);
-	subRowSizer->Add (subColSizer, 0, wxLEFT, 3);
+	subRowSizer->Add (subColSizer, 0, wxLEFT | wxTOP | wxBOTTOM, 3);
 
 
 	mainSizer->Add (subRowSizer, 0, wxEXPAND | wxBOTTOM | wxRIGHT, 5);
@@ -1112,7 +1112,10 @@ LooperPanel::post_control_event (wxString ctrl, float val)
 
 
 wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& buttonLabel, wxWindow* parent, wxWindowID id, bool midiBindable) {
-    wxButton* button = new wxButton(parent, id, buttonLabel);
+	wxButton* button = new wxButton(parent, id, buttonLabel, 
+		wxDefaultPosition,  // position parameter
+		wxSize(100,40)  // size parameter
+	);	
 	button->SetBackgroundColour(_buttonColorNormal);
     
     // Connect to existing event system using wxEVT_BUTTON
