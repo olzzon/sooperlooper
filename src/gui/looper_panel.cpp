@@ -47,15 +47,6 @@ using namespace std;
 
 enum {
 	ID_UndoButton = 8000,
-	ID_RedoButton,
-	ID_RecordButton,
-	ID_OverdubButton,
-	ID_MultiplyButton,
-	ID_MuteButton,
-	ID_PauseButton,
-	ID_SoloButton,
-	ID_LoadButton,
-	ID_SaveButton,
 	
 	ID_ThreshControl,
 	ID_FeedbackControl,
@@ -110,7 +101,7 @@ END_EVENT_TABLE()
 	_panners = 0;
 	_has_discrete_io = false;
 	_waiting = 0;
-	_flashing_button = 0;
+	_flashingButton = 0;
 
 	_flash_timer = new wxTimer(this, ID_FlashTimer);
 	
@@ -184,16 +175,16 @@ LooperPanel::init()
 	
 	// ****** 1.SubRow
 	subColSizer = new wxBoxSizer(wxVERTICAL);
- 	subColSizer->Add (_undo_button, 0, wxTOP, 3);
- 	subColSizer->Add (_redo_button, 0, wxTOP, 3);
-	subRowSizer->Add (subColSizer, 0, wxTop, 0);
-
+ 	subColSizer->Add (undoButton, 0, wxTOP, 3);
+ 	subColSizer->Add (redoButton, 0, wxTOP, 3);
+	 subRowSizer->Add (subColSizer, 0, wxTop, 0);
+	 
 	// ****** 2.SubRow
 	subColSizer = new wxBoxSizer(wxVERTICAL);	
-
-	subColSizer->Add (_record_button, 0, wxLEFT | wxTOP, 3);
-	subColSizer->Add (_overdub_button, 0, wxLEFT | wxTOP | wxBOTTOM, 3);
-	subColSizer->Add (_multiply_button, 0, wxLEFT, 3);
+	
+	subColSizer->Add (recordButton, 0, wxTop, 3);
+	subColSizer->Add (overdubButton, 0, wxTop, 3);
+	subColSizer->Add (multiplyButton, 0, wxLEFT, 3);
 	subRowSizer->Add (subColSizer, 0, wxTop, 0);
 
 	colsizer->Add (subRowSizer, 0, wxTop| wxBOTTOM, 5);
@@ -488,26 +479,6 @@ LooperPanel::set_index(int ind)
 void
 LooperPanel::bind_events()
 {
-	_undo_button->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::pressed_events), wxString(wxT("undo"))));
-	_undo_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("undo"))));
-	_undo_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("undo"))));
-
-	_redo_button->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::pressed_events), wxString(wxT("redo"))));
-	_redo_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("redo"))));
-	_redo_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("redo"))));
-
-	_record_button->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::pressed_events), wxString(wxT("record"))));
-	_record_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("record"))));
-	_record_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("record"))));
-
-	_overdub_button->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::pressed_events), wxString(wxT("overdub"))));
-	_overdub_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("overdub"))));
-	_overdub_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("overdub"))));
-
-	_multiply_button->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::pressed_events), wxString(wxT("multiply"))));
-	_multiply_button->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::released_events), wxString(wxT("multiply"))));
-	_multiply_button->bind_request.connect (sigc::bind(mem_fun (*this, &LooperPanel::button_bind_events), wxString(wxT("multiply"))));
-
 	_loop_position->pressed.connect (sigc::bind(mem_fun (*this, &LooperPanel::scratch_events), wxString(wxT("scratch_press"))));
 	_loop_position->released.connect (sigc::bind(mem_fun (*this, &LooperPanel::scratch_events), wxString(wxT("scratch_release"))));
 
@@ -518,11 +489,11 @@ LooperPanel::bind_events()
 
 void LooperPanel::create_buttons()
 {
- 	_undo_button = new PixButton(this, ID_UndoButton);
- 	_redo_button = new PixButton(this, ID_RedoButton);
- 	_record_button = new PixButton(this, ID_RecordButton);
- 	_overdub_button = new PixButton(this, ID_OverdubButton);
- 	_multiply_button = new PixButton(this, ID_MultiplyButton);
+	undoButton = CreateButton("undo", "Undo", this);
+	redoButton = CreateButton("redo", "Redo", this);
+	recordButton = CreateButton("record", "Record", this);
+	overdubButton = CreateButton("overdub", "Overdub", this);
+	multiplyButton = CreateButton("multiply", "Multiply", this);
 
 	loadButton = CreateButton("load", "Load", this);
  	saveButton = CreateButton("save", "Save", this);
@@ -530,38 +501,6 @@ void LooperPanel::create_buttons()
 	pauseButton = CreateButton("pause", "Pause", this);
 	soloButton = CreateButton("solo", "Solo", this);
 
-	
-	// load them all up manually
-	_undo_button->set_normal_bitmap (wxBitmap(undo_normal));
-	_undo_button->set_selected_bitmap (wxBitmap(undo_selected));
-	_undo_button->set_focus_bitmap (wxBitmap(undo_focus));
-	_undo_button->set_disabled_bitmap (wxBitmap(undo_disabled));
-	_undo_button->set_active_bitmap (wxBitmap(undo_active));
-	
-	_redo_button->set_normal_bitmap (wxBitmap(redo_normal));
-	_redo_button->set_selected_bitmap (wxBitmap(redo_selected));
-	_redo_button->set_focus_bitmap (wxBitmap(redo_focus));
-	_redo_button->set_disabled_bitmap (wxBitmap(redo_disabled));
-	_redo_button->set_active_bitmap (wxBitmap(redo_active));
-
-	_record_button->set_normal_bitmap (wxBitmap(record_normal));
-	_record_button->set_selected_bitmap (wxBitmap(record_selected));
-	_record_button->set_focus_bitmap (wxBitmap(record_focus));
-	_record_button->set_disabled_bitmap (wxBitmap(record_disabled));
-	_record_button->set_active_bitmap (wxBitmap(record_active));
-
-	_overdub_button->set_normal_bitmap (wxBitmap(overdub_normal));
-	_overdub_button->set_selected_bitmap (wxBitmap(overdub_selected));
-	_overdub_button->set_focus_bitmap (wxBitmap(overdub_focus));
-	_overdub_button->set_disabled_bitmap (wxBitmap(overdub_disabled));
-	_overdub_button->set_active_bitmap (wxBitmap(overdub_active));
-
-	_multiply_button->set_normal_bitmap (wxBitmap(multiply_normal));
-	_multiply_button->set_selected_bitmap (wxBitmap(multiply_selected));
-	_multiply_button->set_focus_bitmap (wxBitmap(multiply_focus));
-	_multiply_button->set_disabled_bitmap (wxBitmap(multiply_disabled));
-	_multiply_button->set_active_bitmap (wxBitmap(multiply_active));
-	
 }
 
 
@@ -707,23 +646,23 @@ LooperPanel::update_state()
 	_loop_control->get_value(_index, wxT("is_soloed"), soloed);
 	_waiting = (val > 0.0f) ? true : false;
 
-	if (!_waiting && _flashing_button) {
+	if (!_waiting && _flashingButton) {
 		// clear flashing
-		_flashing_button->set_active(false);
-		_flashing_button = 0;
+		SetButtonState(_flashingButton, ButtonState::StopBlink);
+		_flashingButton = 0;
 	}
 	
 	// set not active for all state buttons
 	switch(_last_state) {
 	case LooperStateRecording:
 	case LooperStateWaitStop:
-		_record_button->set_active(false);
+		SetButtonState(recordButton, ButtonState::Normal);
 		break;
 	case LooperStateOverdubbing:
-		_overdub_button->set_active(false);
+		SetButtonState(overdubButton, ButtonState::Normal);
 		break;
-	case LooperStateMultiplying:
-		_multiply_button->set_active(false);
+		case LooperStateMultiplying:
+		SetButtonState(multiplyButton, ButtonState::Normal);
 		break;
 	case LooperStateMuted:
 	case LooperStateOffMuted:
@@ -740,28 +679,28 @@ LooperPanel::update_state()
 	switch(state) {
 	case LooperStateRecording:
 	case LooperStateWaitStop:
-		_record_button->set_active(true);
-		_flashing_button = _record_button;
+		SetButtonState(recordButton, ButtonState::Active);
+		SetFlashingButton(recordButton);
 		break;
 	case LooperStateWaitStart:
-		_flashing_button = _record_button;
+		SetFlashingButton(recordButton);
 		break;
 	case LooperStateOverdubbing:
-		_overdub_button->set_active(true);
-		_flashing_button = _overdub_button;
+		SetButtonState(overdubButton, ButtonState::Active);
+		SetFlashingButton(overdubButton);
 		break;
-	case LooperStateMultiplying:
-		_multiply_button->set_active(true);
-		_flashing_button = _multiply_button;
+		case LooperStateMultiplying:
+		SetButtonState(multiplyButton, ButtonState::Active);
+		SetFlashingButton(multiplyButton);
 		break;
 	case LooperStateMuted:
 	case LooperStateOffMuted:
 		SetButtonState(muteButton, ButtonState::Active);
-		//_flashing_button = muteButton;
+		SetFlashingButton(muteButton);
 		break;
 	case LooperStatePaused:
 		SetButtonState(pauseButton, ButtonState::Active);
-		// _flashing_button = pauseButton;
+		SetFlashingButton(pauseButton);
 		break;
 	default:
 		break;
@@ -775,22 +714,22 @@ LooperPanel::update_state()
 			case LooperStateRecording:
 			case LooperStateWaitStart:
 			case LooperStateWaitStop:
-				_flashing_button = _record_button;
+				SetFlashingButton(recordButton); 
 				break;
 			case LooperStateOverdubbing:
-				_flashing_button = _overdub_button;
+				SetFlashingButton(overdubButton);
 				break;
 			case LooperStateMultiplying:
-				_flashing_button = _multiply_button;
+				SetFlashingButton(multiplyButton);
 				break;
 			case LooperStateMuted:
 			case LooperStateOffMuted:
 				if (state == LooperStatePlaying)
-					//_flashing_button = muteButton;
+					SetFlashingButton(muteButton);
 				break;
 			case LooperStatePlaying:
 				if( state == LooperStateMuted) {
-					//_flashing_button = muteButton;
+					SetFlashingButton(muteButton);
 				}
 				break;
 			default:
@@ -817,12 +756,20 @@ LooperPanel::update_state()
 }
 
 void
+LooperPanel::SetFlashingButton (wxButton* button) {
+	if (_flashingButton) {
+		SetButtonState(_flashingButton, ButtonState::StopBlink);
+	}
+	_flashingButton = button;
+}
+
+void
 LooperPanel::on_flash_timer (wxTimerEvent &ev)
 {
 	// toggle the active state of current flash button
 
-	if (_flashing_button) {
-		_flashing_button->set_active (!_flashing_button->get_active());
+	if (_flashingButton) {
+		SetButtonState(_flashingButton, ButtonState::Blinking);
 	}
 }
 
@@ -1215,7 +1162,7 @@ wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& 
     
     // Connect to existing event system using wxEVT_BUTTON
     button->Bind(wxEVT_BUTTON, [this, buttonName, button](wxCommandEvent& event) {
-		clicked_events(button->GetId(), buttonName.ToStdString());
+		clicked_events(button->GetId(), buttonName);
     });
 
 	button->Bind(wxEVT_LEFT_DOWN, [this, buttonName, button](wxMouseEvent& event) {
@@ -1244,10 +1191,6 @@ wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& 
 }
 
 void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
-	// Ensure any flashing timer is stopped upon state change
-	if (button->GetClientObject()) {
-		button->SetClientObject(nullptr); // This will delete the timer
-	}
 	
     switch (state) {
         case Normal:
@@ -1257,6 +1200,7 @@ void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
         case Active:
             button->Enable(true);
             button->SetBackgroundColour(wxColour(255, 0, 0));
+			break;
         case Disabled:
             button->Enable(false);
             break;
@@ -1264,28 +1208,34 @@ void LooperPanel::SetButtonState(wxButton* button, ButtonState state) {
 			button->Enable(true);
 			
 			// Create and setup flash timer if not already exists
-			if (!button->GetClientObject()) {
+			if (!button->GetClientObject()) 
+			{
 				wxTimer* timer = new wxTimer(this);
 				ButtonFlashTimer* flashTimer = new ButtonFlashTimer(timer);
 				button->SetClientObject(flashTimer);
 				
-				// Bind timer event using a lambda to capture the button
+				static bool flash_state = false;
 				this->Bind(wxEVT_TIMER, [this, button](wxTimerEvent& event) {
-					static bool flash_state = false;
 					flash_state = !flash_state;
 					
 					if (flash_state) {
 						button->SetBackgroundColour(wxColour(200, 200, 200)); // Flash on color
 					} else {
-						button->SetBackgroundColour(wxNullColour); // Flash off color
+						button->SetBackgroundColour(wxColour(30, 30, 30)); // Flash off color
 					}
 					button->Refresh();
 				}, timer->GetId());
 				
-				// Start timer with 500ms interval (2 Hz flash rate)
-				timer->Start(500);
+				// Start timer:
+				timer->Start(FlashRate);
 			}
 			break;
+		case StopBlink:
+			//Ensure flashing timer is stopped:
+			if (button->GetClientObject()) {
+				button->SetClientObject(nullptr); // This will delete the timer
+			}
+		break;
 			
     }
     button->Refresh();

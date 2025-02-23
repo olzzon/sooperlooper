@@ -83,9 +83,11 @@ class LooperPanel
 		Normal,
 		Active,
 		Disabled,
-		Blinking
+		Blinking,
+		StopBlink
 	};
 	void SetButtonState(wxButton* button, ButtonState state);
+	void SetFlashingButton (wxButton* button);
 
   protected:
 
@@ -137,11 +139,11 @@ class LooperPanel
 	wxColour   _learnbgcolor;
 	wxColour   _barGreen;
 	
-	PixButton * _undo_button;
-	PixButton * _redo_button;
-	PixButton * _record_button;
-	PixButton * _overdub_button;
-	PixButton * _multiply_button;
+	wxButton *  undoButton;
+	wxButton *  redoButton;
+	wxButton *  recordButton;
+	wxButton *  overdubButton;
+	wxButton *  multiplyButton;
 	wxButton *  muteButton;
 	wxButton *  pauseButton;
 	wxButton *  soloButton;
@@ -195,8 +197,6 @@ class LooperPanel
 	bool _has_discrete_io;
 	bool _waiting;
 
-//!!!!!!!! change _flashing_button when transition to wxButton is complete
-	PixButton * _flashing_button;
 	wxButton * _flashingButton;
 	wxTimer * _flash_timer;
 	
