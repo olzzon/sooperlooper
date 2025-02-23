@@ -38,6 +38,7 @@ enum {
 	ID_OutputLatency,
 	ID_UpdateTimer,
 	ID_AutoDisableCheck,
+	ID_ShowFullPanelCheck,
 	ID_RoundTempoInteger,
 	ID_JackTimebaseMaster,
 	ID_UseMidiStart,
@@ -50,6 +51,7 @@ enum {
 BEGIN_EVENT_TABLE(SooperLooperGui::LatencyPanel, wxPanel)
 	EVT_CHECKBOX (ID_AutoCheck, SooperLooperGui::LatencyPanel::on_check)
 	EVT_CHECKBOX (ID_AutoDisableCheck, SooperLooperGui::LatencyPanel::on_check)
+	EVT_CHECKBOX (ID_ShowFullPanelCheck, SooperLooperGui::LatencyPanel::on_check)
 	EVT_CHECKBOX (ID_RoundTempoInteger, SooperLooperGui::LatencyPanel::on_check)
 	EVT_CHECKBOX (ID_JackTimebaseMaster, SooperLooperGui::LatencyPanel::on_check)
 	EVT_CHECKBOX (ID_UseMidiStart, SooperLooperGui::LatencyPanel::on_check)
@@ -114,6 +116,7 @@ LatencyPanel::OnUpdateTimer(wxTimerEvent &ev)
 		lcontrol.request_control_value(0, wxT("output_latency"));
 		lcontrol.request_control_value(0, wxT("autoset_latency"));
 		lcontrol.request_global_control_value(wxT("auto_disable_latency"));
+		lcontrol.request_global_control_value(wxT("show_full_looper_panel"));
 		lcontrol.request_global_control_value(wxT("jack_timebase_master"));
 		//lcontrol.request_global_control_value(wxT("use_midi_start"));
 		//lcontrol.request_global_control_value(wxT("use_midi_stop"));
@@ -168,8 +171,12 @@ void LatencyPanel::init()
 	
 	colsizer->Add (rowsizer, 0, wxEXPAND|wxALL, 6);
 
+	_show_full_panel_check = new wxCheckBox(this, ID_ShowFullPanelCheck, wxT("Show the full looper panel"));
+	colsizer->Add (_show_full_panel_check, 0, wxEXPAND|wxALL, 10);
+
 	_auto_disable_check = new wxCheckBox(this, ID_AutoDisableCheck, wxT("Automatically Disable Compensation when Monitoring Input"));
 	colsizer->Add (_auto_disable_check, 0, wxEXPAND|wxALL, 10);
+
 
 	topsizer->Add(colsizer, 0, wxALL|wxEXPAND, 3);
 
@@ -214,6 +221,9 @@ void LatencyPanel::refresh_state()
 
 	if (lcontrol.get_value (0, wxT("autoset_latency"), retval)) {
 		_auto_check->SetValue(retval > 0.0f);
+	}
+	if (lcontrol.get_global_value (wxT("show_full_looper_panel"), retval)) {
+		_show_full_panel_check->SetValue(retval > 0.0f);
 	}
 	if (lcontrol.get_global_value (wxT("auto_disable_latency"), retval)) {
 		_auto_disable_check->SetValue(retval > 0.0f);
@@ -302,6 +312,9 @@ void LatencyPanel::on_check (wxCommandEvent &ev)
         }
 	else if (ev.GetId() == ID_AutoDisableCheck) {
 		lcontrol.post_ctrl_change (-2, wxT("auto_disable_latency"), _auto_disable_check->GetValue() ? 1.0f : 0.0f);
+	}
+	else if (ev.GetId() == ID_ShowFullPanelCheck) {
+		lcontrol.post_ctrl_change (-2, wxT("show_full_looper_panel"), _show_full_panel_check->GetValue() ? 1.0f : 0.0f);
 	}
     
 

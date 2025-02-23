@@ -164,6 +164,7 @@ CommandMap::CommandMap()
 	add_global_control("tap_tempo", Event::TapTempo, UnitGeneric);
 	add_global_control("save_loop", Event::SaveLoop);
 	add_global_control("auto_disable_latency", Event::AutoDisableLatency, UnitBoolean, 0.0f, 1.0f, 1.0f);
+	add_global_control("show_full_looper_panel", Event::ShowFullLooperPanel, UnitBoolean, 0.0f, 1.0f, 1.0f);
 	add_global_control("select_next_loop", Event::SelectNextLoop);
 	add_global_control("select_prev_loop", Event::SelectPrevLoop);
 	add_global_control("select_all_loops", Event::SelectAllLoops);

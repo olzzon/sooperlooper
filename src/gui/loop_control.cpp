@@ -376,6 +376,7 @@ LoopControl::register_global_updates(bool unreg)
 	lo_send(_osc_addr, buf, "sss", "dry", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "input_gain", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "auto_disable_latency", _our_url.c_str(), "/ctrl");
+	lo_send(_osc_addr, buf, "sss", "show_full_looper_panel", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "output_midi_clock", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "use_midi_stop", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "use_midi_start", _our_url.c_str(), "/ctrl");
@@ -971,6 +972,7 @@ LoopControl::request_global_values()
 	lo_send(_osc_addr, buf, "sss", "wet", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "input_gain", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "auto_disable_latency", _our_url.c_str(), "/ctrl");
+	lo_send(_osc_addr, buf, "sss", "show_full_looper_panel", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "smart_eighths", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "output_midi_clock", _our_url.c_str(), "/ctrl");
 	lo_send(_osc_addr, buf, "sss", "use_midi_stop", _our_url.c_str(), "/ctrl");

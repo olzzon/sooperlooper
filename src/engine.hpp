@@ -276,6 +276,7 @@ class Engine
 	float              _falloff_per_sample;
 	
 	bool               _auto_disable_latency;
+	bool               _show_full_looper_panel;
 	int                _selected_loop;
 	bool               _jack_timebase_master;
 

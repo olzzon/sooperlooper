@@ -188,6 +188,7 @@ namespace SooperLooper {
 		    MidiStop,
 		    MidiTick,
 		    AutoDisableLatency,
+		    ShowFullLooperPanel,
 		    SmartEighths,
 		    OutputMidiClock,
 		    UseMidiStart,

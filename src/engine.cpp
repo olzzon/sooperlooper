@@ -83,6 +83,7 @@ Engine::Engine ()
 	_common_input_peak = 0.0f;
 	_common_output_peak = 0.0f;
 	_auto_disable_latency = true;
+	_show_full_looper_panel = true;
 	_jack_timebase_master = false;
 	_loading = false;
 	_use_temp_input = true; // all the time for now
@@ -1139,6 +1140,11 @@ Engine::do_global_rt_event (Event * ev, nframes_t offset, nframes_t nframes)
 		}
 		_conns_changed = true;
 	}
+	else if (ev->Control == Event::ShowFullLooperPanel)
+	{
+		_show_full_looper_panel = ev->Value;
+
+	}
 	else if (ev->Control == Event::OutputMidiClock)
 	{
 		_output_midi_clock = ev->Value;
@@ -1539,6 +1545,9 @@ Engine::get_control_value (Event::control_t ctrl, int8_t instance)
 		else if (ctrl == Event::AutoDisableLatency) {
 			return _auto_disable_latency ? 1.0f: 0.0f;
 		}
+		else if (ctrl == Event::ShowFullLooperPanel) {
+			return _show_full_looper_panel ? 1.0f: 0.0f;
+		}
 		else if (ctrl == Event::JackTimebaseMaster) {
 			return _jack_timebase_master ? 1.0f: 0.0f;
 		}
@@ -1868,6 +1877,9 @@ Engine::process_nonrt_event (EventNonRT * event)
 		else if (gg_event->param == "auto_disable_latency") {
 			gg_event->ret_value =  (_auto_disable_latency) ? 1.0f: 0.0f;
 		}
+		else if (gg_event->param == "show_full_looper_panel") {
+			gg_event->ret_value =  (_show_full_looper_panel) ? 1.0f: 0.0f;
+		}
 		else if (gg_event->param == "jack_timebase_master") {
 			gg_event->ret_value =  (_jack_timebase_master) ? 1.0f: 0.0f;
 		}
@@ -1914,6 +1926,10 @@ Engine::process_nonrt_event (EventNonRT * event)
 		}
 		else if (gs_event->param == "auto_disable_latency") {
 			_auto_disable_latency = gs_event->value;
+			//cerr << "NEED TO setting disable_compensation " << endl;
+		}
+		else if (gs_event->param == "show_full_looper_panel") {
+			_show_full_looper_panel = gs_event->value;
 			//cerr << "NEED TO setting disable_compensation " << endl;
 		}
 		else if (gs_event->param == "jack_timebase_master") {
@@ -2826,6 +2842,11 @@ Engine::load_session (std::string fname, string * readstr)
 			sscanf (prop->value().c_str(), "%d", &temp);
 			_auto_disable_latency = temp ? true: false;
 		}
+		if ((prop = globals_node->property ("show_full_looper_panel")) != 0) {
+			int temp = 0;
+			sscanf (prop->value().c_str(), "%d", &temp);
+			_show_full_looper_panel = temp ? true: false;
+		}
 		if ((prop = globals_node->property ("jack_timebase_master")) != 0) {
 			int temp = 0;
 			sscanf (prop->value().c_str(), "%d", &temp);
@@ -2940,6 +2961,9 @@ Engine::save_session (std::string fname, bool write_audio, string * writestr)
 
 	snprintf(buf, sizeof(buf), "%d", (int)_auto_disable_latency ? 1 : 0);
 	globals_node->add_property ("auto_disable_latency", buf);
+
+	snprintf(buf, sizeof(buf), "%d", (int)_show_full_looper_panel ? 1 : 0);
+	globals_node->add_property ("show_full_looper_panel", buf);
 
 	snprintf(buf, sizeof(buf), "%d", (int)_jack_timebase_master ? 1 : 0);
 	globals_node->add_property ("jack_timebase_master", buf);
