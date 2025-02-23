@@ -534,7 +534,7 @@ void LooperPanel::create_buttons()
 	_load_button = new PixButton(this, ID_LoadButton, false);
  	_save_button = new PixButton(this, ID_SaveButton, false);
 	 _mute_button = new PixButton(this, ID_MuteButton);
- 	muteButton = CreateButton("Mute", this);
+ 	muteButton = CreateButton("Mute", "mute", this);
  	_pause_button = new PixButton(this, ID_PauseButton);
  	_solo_button = new PixButton(this, ID_SoloButton);
 
@@ -1249,8 +1249,8 @@ LooperPanel::post_control_event (wxString ctrl, float val)
 }
 
 
-wxButton* LooperPanel::CreateButton(const wxString& buttonName, wxWindow* parent, wxWindowID id, bool midiBindable) {
-    wxButton* button = new wxButton(parent, id, buttonName);
+wxButton* LooperPanel::CreateButton(const wxString& buttonName, const wxString& buttonLabel, wxWindow* parent, wxWindowID id, bool midiBindable) {
+    wxButton* button = new wxButton(parent, id, buttonLabel);
     
     // Connect to existing event system using wxEVT_BUTTON
     button->Bind(wxEVT_BUTTON, [this, buttonName](wxCommandEvent& event) {

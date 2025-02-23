@@ -60,7 +60,9 @@ class LooperPanel
 
 	void set_selected (bool flag);
 
-	wxButton* CreateButton(const wxString& buttonName, 
+	wxButton* CreateButton(
+		const wxString& buttonName, 
+		const wxString& buttonLabel,
 		wxWindow* parent, 
 		wxWindowID id = wxID_ANY,
 		bool midiBindable = true
