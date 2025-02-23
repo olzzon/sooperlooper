@@ -74,12 +74,6 @@ class LooperPanel
 	};
 	void SetButtonState(wxButton* button, ButtonState state);
 
-
-	// Generic event handlers
-	void OnButtonPressed(wxCommandEvent& event);
-	void OnButtonReleased(wxCommandEvent& event);
-	void OnButtonBindRequest(wxCommandEvent& event);
-
   protected:
 
 	void init();
