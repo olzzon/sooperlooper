@@ -105,17 +105,6 @@ END_EVENT_TABLE()
 
 	_flash_timer = new wxTimer(this, ID_FlashTimer);
 
-	float panel_state = 0.0f;
-	bool got_value = _loop_control->get_global_value("show_full_looper_panel", panel_state);
-
-	if (got_value) {
-		_showFullPanel = (panel_state > 0.0f);
-	} else {
-		// Handle case where we couldn't get the value
-		// Usually default to false or previous state
-		_showFullPanel = false;
-	}
-
 	init();
 }
 
@@ -357,12 +346,10 @@ LooperPanel::init()
 	subRowSizer->Add (subColSizer, 0, wxLEFT, 3);
 	
 	// ****** 4.Row - 2.SubRow
-	if (_showFullPanel) {
-		subColSizer = new wxBoxSizer(wxVERTICAL);
-		subColSizer->Add (loadButton, 0, wxLEFT | wxTOP, 3);
-		subColSizer->Add (saveButton, 0, wxLEFT | wxTOP, 3);
-		subRowSizer->Add (subColSizer, 0, wxLEFT | wxTOP | wxBOTTOM, 3);
-	}
+	subColSizer = new wxBoxSizer(wxVERTICAL);
+	subColSizer->Add (loadButton, 0, wxLEFT | wxTOP, 3);
+	subColSizer->Add (saveButton, 0, wxLEFT | wxTOP, 3);
+	subRowSizer->Add (subColSizer, 0, wxLEFT | wxTOP | wxBOTTOM, 3);
 
 	mainSizer->Add (subRowSizer, 0, wxEXPAND | wxBOTTOM | wxRIGHT, 5);
 

@@ -161,7 +161,7 @@ AppFrame::init()
 	
 	wxFont sliderFont = *wxSMALL_FONT;
 
-	wxSize defaultSize(1024, 700);
+	wxSize defaultSize(1024, 1400);
 
 	_mainpanel = new MainPanel(this, -1, wxDefaultPosition, defaultSize);
 
